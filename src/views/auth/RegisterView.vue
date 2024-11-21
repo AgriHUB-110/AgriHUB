@@ -24,7 +24,7 @@ const formData = ref({
 
 const onRegister = () => {
   // Your login logic here
-  alert('Miss kita')
+  alert("Miss kita")
   // console.log('Login Successful')
 }
 
@@ -45,7 +45,7 @@ const onFormSubmit = () => {
           <!-- !! v card -->
           <v-card class="glass-card border-thin" text="">
             <!-- !! form -->
-            <v-form class="px-3 pb-3" @submit.prevent="onFormSubmit">
+            <v-form ref="refVform" class="px-3 pb-3" @submit.prevent="onFormSubmit">
               <!-- !! first name -->
               <v-text-field
                 v-model="formData.firstName"
