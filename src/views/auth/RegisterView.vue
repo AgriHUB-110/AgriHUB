@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+const visible = ref(false)
 import AppLayout from '@/components/layout/AppLayout.vue'
 </script>
 
@@ -39,20 +40,26 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 
               <!-- !! Password -->
               <v-text-field
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visible ? 'text' : 'password'"
                 v-model="password"
                 :rules="passwordRules"
                 label="Password"
                 variant="outlined"
                 type="password"
+                @click:append-inner="visible = !visible"
               ></v-text-field>
 
               <!-- !! Confirm Password -->
               <v-text-field
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visible ? 'text' : 'password'"
                 v-model="password"
                 :rules="passwordRules"
                 label="Confirm Password"
                 variant="outlined"
                 type="password"
+                @click:append-inner="visible = !visible"
               ></v-text-field>
 
               <v-btn
