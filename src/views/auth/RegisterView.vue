@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-const visible = ref(false)
+const visiblePass = ref(false)
+const visibleConfirmPass = ref(false)
 import AppLayout from '@/components/layout/AppLayout.vue'
 </script>
 
@@ -16,50 +17,34 @@ import AppLayout from '@/components/layout/AppLayout.vue'
             <v-form class="px-3 pb-3" fast-fail @submit.prevent>
               <!-- !! first name -->
               <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
                 label="First Name"
                 variant="outlined"
               ></v-text-field>
 
               <!-- !! last name -->
-              <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
-                label="Last Name"
-                variant="outlined"
-              ></v-text-field>
+              <v-text-field label="Last Name" variant="outlined"></v-text-field>
 
               <!-- !! Email -->
-              <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
-                label="Email"
-                variant="outlined"
-              ></v-text-field>
+              <v-text-field label="Email" variant="outlined"></v-text-field>
 
               <!-- !! Password -->
               <v-text-field
-                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="visible ? 'text' : 'password'"
-                v-model="password"
-                :rules="passwordRules"
+                :append-inner-icon="visiblePass ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visiblePass ? 'text' : 'password'"
                 label="Password"
                 variant="outlined"
                 type="password"
-                @click:append-inner="visible = !visible"
+                @click:append-inner="visiblePass = !visiblePass"
               ></v-text-field>
 
               <!-- !! Confirm Password -->
               <v-text-field
-                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="visible ? 'text' : 'password'"
-                v-model="password"
-                :rules="passwordRules"
+                :append-inner-icon="visibleConfirmPass ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visibleConfirmPass ? 'text' : 'password'"
                 label="Confirm Password"
                 variant="outlined"
                 type="password"
-                @click:append-inner="visible = !visible"
+                @click:append-inner="visibleConfirmPass = !visibleConfirmPass"
               ></v-text-field>
 
               <v-btn

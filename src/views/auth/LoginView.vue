@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+const visiblePass = ref(false)
+
 import AppLayout from '@/components/layout/AppLayout.vue'
 </script>
 
@@ -13,16 +15,14 @@ import AppLayout from '@/components/layout/AppLayout.vue'
           <!-- !! v card -->
           <v-card class="glass-card border-thin" text="">
             <v-form class="px-3 pb-3" fast-fail @submit.prevent>
-              <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
-                label="Email"
-                variant="outlined"
-              ></v-text-field>
+              <!-- !! Email -->
+              <v-text-field label="Email" variant="outlined"></v-text-field>
 
+              <!-- !! Password -->
               <v-text-field
-                v-model="password"
-                :rules="passwordRules"
+                :append-inner-icon="visiblePass ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visiblePass ? 'text' : 'password'"
+                @click:append-inner="visiblePass = !visiblePass"
                 label="Password"
                 variant="outlined"
                 type="password"
