@@ -1,8 +1,29 @@
 <script setup>
 import { ref } from 'vue'
 const visiblePass = ref(false)
-
 import AppLayout from '@/components/layout/AppLayout.vue'
+import { requiredValidator, emailValidator } from '@/utils/validator'
+const refVform = ref()
+
+const formDataDefault = {
+  email: '',
+  password: '',
+}
+const formData = ref({
+  ...formDataDefault
+})
+
+const onLogin = () => {
+  // Your login logic here
+  alert("Miss kita")
+  // console.log('Login Successful')
+}
+
+const onFormSubmit = () => {
+  refVform.value?.validate().then(({ valid }) => {
+    if (valid) onLogin()
+  })
+}
 </script>
 
 <template>
@@ -14,18 +35,27 @@ import AppLayout from '@/components/layout/AppLayout.vue'
         <v-col cols="12" md="6" class="mx-auto">
           <!-- !! v card -->
           <v-card class="glass-card border-thin" text="">
-            <v-form class="px-3 pb-3" fast-fail @submit.prevent>
+
+
+            <v-form ref="refVform" class="px-3 pb-5" @submit.prevent="onFormSubmit">
               <!-- !! Email -->
-              <v-text-field label="Email" variant="outlined"></v-text-field>
+              <v-text-field
+              v-model="formData.email"
+                label="Email"
+                variant="outlined"
+                :rules="[requiredValidator, emailValidator]"
+              ></v-text-field>
 
               <!-- !! Password -->
-              <v-text-field
+              <v-text-field class = "pt-3"
+              v-model="formData.password"
                 :append-inner-icon="visiblePass ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="visiblePass ? 'text' : 'password'"
                 @click:append-inner="visiblePass = !visiblePass"
                 label="Password"
                 variant="outlined"
                 type="password"
+                :rules="[requiredValidator]"
               ></v-text-field>
 
               <v-btn
