@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { supabase } from '@/utils/supabase.js'  // Importing the supabase client
+import { supabase } from '@/utils/supabase.js' // Importing the supabase client
 
 const router = useRouter()
 const userEmail = ref('')
@@ -24,7 +24,11 @@ const checkSession = async () => {
   const { data } = await supabase.auth.getSession()
   if (data.session) {
     // Session exists, route to /Home
-    if (router.currentRoute.value.path === '/' || router.currentRoute.value.path === '/register' || router.currentRoute.value.path === '/Register') {
+    if (
+      router.currentRoute.value.path === '/' ||
+      router.currentRoute.value.path === '/register' ||
+      router.currentRoute.value.path === '/Register'
+    ) {
       router.replace('/Home')
     }
   } else {
@@ -36,7 +40,7 @@ const checkSession = async () => {
 }
 
 onMounted(() => {
-  checkSession()  // Call checkSession on component mount
+  checkSession() // Call checkSession on component mount
   fetchUserEmail()
 })
 </script>
@@ -58,11 +62,14 @@ onMounted(() => {
               <h1 class="text-h3 mb-3">Welcome to Our Site!</h1>
               <p class="mb-3">Logged in as: {{ userEmail }}</p>
               <p class="mb-5">
-                Discover amazing content, connect with great people, and explore new opportunities with us. Sign up now to get started!
+                Discover amazing content, connect with great people, and explore
+                new opportunities with us. Sign up now to get started!
               </p>
               <v-btn color="primary" class="mr-4">Get Started</v-btn>
               <v-btn outlined color="secondary" class="mr-4">Learn More</v-btn>
-              <v-btn outlined color="error" class="ma-4" @click="onLogout">Logout</v-btn>
+              <v-btn outlined color="error" class="ma-4" @click="onLogout"
+                >Logout</v-btn
+              >
             </v-card>
           </v-col>
         </v-row>
@@ -70,3 +77,4 @@ onMounted(() => {
     </v-main>
   </v-app>
 </template>
+<!-- !1 test tut pull request -->
