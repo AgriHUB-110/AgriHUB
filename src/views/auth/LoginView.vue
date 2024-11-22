@@ -22,14 +22,16 @@ const formAction = reactive({
   ...formActionDefault,
 })
 
+// Function to check user session
 const checkSession = async () => {
   const { data } = await supabase.auth.getSession()
   if (data.session) {
-    // Session exists, route to /Home
+    // If session exists, redirect to /Home
     router.replace('/Home')
   }
 }
 
+// Function to handle login process
 const onLogin = async () => {
   formAction.formProcess = true
   formAction.formErrorMessage = ''
@@ -52,7 +54,7 @@ const onLogin = async () => {
   }
 }
 
-
+// Function to handle form submission
 const onFormSubmit = () => {
   refVform.value?.validate().then(({ valid }) => {
     if (valid) onLogin()
@@ -71,6 +73,7 @@ onMounted(() => {
       <v-row class="d-flex justify-center">
         <v-col cols="12" md="6" class="mx-auto">
           <v-card class="glass-card border-thin" text="">
+            <!-- Notification component to show success and error messages -->
             <notif
               :form-success-message="formAction.formSuccessMessage"
               :form-error-message="formAction.formErrorMessage"
@@ -81,6 +84,7 @@ onMounted(() => {
               class="px-3 pb-5 mt-5"
               @submit.prevent="onFormSubmit"
             >
+              <!-- Email input field with validation rules -->
               <v-text-field
                 v-model="formData.email"
                 label="Email"
@@ -88,6 +92,7 @@ onMounted(() => {
                 :rules="[requiredValidator, emailValidator]"
               ></v-text-field>
 
+              <!-- Password input field with visibility toggle and validation rules -->
               <v-text-field
                 class="pt-3"
                 v-model="formData.password"
@@ -99,6 +104,7 @@ onMounted(() => {
                 :rules="[requiredValidator]"
               ></v-text-field>
 
+              <!-- Login button with loading state -->
               <v-btn
                 block
                 variant="outlined"
