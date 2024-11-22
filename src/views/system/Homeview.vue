@@ -1,5 +1,3 @@
-
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -22,16 +20,11 @@ const onLogout = async () => {
   router.replace('/')
 }
 
-onMounted(() => {
-  fetchUserEmail()
-})
-
-
 const checkSession = async () => {
   const { data } = await supabase.auth.getSession()
   if (data.session) {
     // Session exists, route to /Home
-    if (router.currentRoute.value.path === '/' || router.currentRoute.value.path === '/register') {
+    if (router.currentRoute.value.path === '/' || router.currentRoute.value.path === '/register' || router.currentRoute.value.path === '/Register') {
       router.replace('/Home')
     }
   } else {
@@ -42,6 +35,10 @@ const checkSession = async () => {
   }
 }
 
+onMounted(() => {
+  checkSession()  // Call checkSession on component mount
+  fetchUserEmail()
+})
 </script>
 
 <style scoped>
