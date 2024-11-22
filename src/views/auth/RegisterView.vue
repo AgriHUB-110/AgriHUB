@@ -1,6 +1,67 @@
 <script setup>
 import { ref } from 'vue'
+const visiblePass = ref(false)
+const visibleConfirmPass = ref(false)
 import AppLayout from '@/components/layout/AppLayout.vue'
+import {
+  requiredValidator,
+  emailValidator,
+  passwordValidator,
+  confirmedValidator,
+} from '@/utils/validator'
+import { supabase, formActionDefault } from '@/utils/supabase.js'
+import notif from '@/components/common/notif.vue'
+const refVform = ref()
+
+const formDataDefault = {
+  firstname: '',
+  lastname: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+}
+const formData = ref({
+  ...formDataDefault,
+})
+
+const formAction = ref({
+  ...formActionDefault,
+})
+
+const onRegister = async () => {
+  // Your login logic here
+  // alert('Miss kita')
+  formAction.value = { ...formActionDefault }
+  formAction.value.formProcess = true
+  const { data, error } = await supabase.auth.signUp({
+    email: formData.value.email,
+    password: formData.value.password,
+    options: {
+      data: {
+        firstname: formData.value.firstname,
+        lastname: formData.value.lastname,
+      },
+    },
+  })
+
+  if (error) {
+    console.log(error)
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+  } else if (data) {
+    console.log(data)
+    formAction.value.formSuccessMessage = 'Successfully Registered :)'
+    refVform.value?.reset()
+  }
+
+  formAction.value.formProcess = false
+}
+
+const onFormSubmit = () => {
+  refVform.value?.validate().then(({ valid }) => {
+    if (valid) onRegister()
+  })
+}
 </script>
 
 <template>
@@ -12,47 +73,74 @@ import AppLayout from '@/components/layout/AppLayout.vue'
         <v-col cols="12" md="6" class="mx-auto">
           <!-- !! v card -->
           <v-card class="glass-card border-thin" text="">
-            <v-form class="px-3 pb-3" fast-fail @submit.prevent>
+            <notif
+              :form-success-message="formAction.formSuccessMessage"
+              :form-error-message="formAction.formErrorMessage"
+            ></notif>
+            <!-- !! form -->
+            <v-form
+              ref="refVform"
+              class="px-3 pb-3 pt-5"
+              @submit.prevent="onFormSubmit"
+            >
               <!-- !! first name -->
               <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
+                v-model="formData.firstName"
                 label="First Name"
                 variant="outlined"
+                :rules="[requiredValidator]"
               ></v-text-field>
 
               <!-- !! last name -->
               <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
+                v-model="formData.lastName"
                 label="Last Name"
                 variant="outlined"
+                class="mt-3"
+                :rules="[requiredValidator]"
               ></v-text-field>
 
               <!-- !! Email -->
               <v-text-field
-                v-model="userName"
-                :rules="userNameRules"
+                v-model="formData.email"
                 label="Email"
                 variant="outlined"
+                class="mt-3"
+                :rules="[requiredValidator, emailValidator]"
               ></v-text-field>
 
               <!-- !! Password -->
               <v-text-field
-                v-model="password"
-                :rules="passwordRules"
+                v-model="formData.password"
+                :append-inner-icon="visiblePass ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visiblePass ? 'text' : 'password'"
                 label="Password"
                 variant="outlined"
                 type="password"
+                class="mt-3"
+                @click:append-inner="visiblePass = !visiblePass"
+                :rules="[requiredValidator, passwordValidator]"
               ></v-text-field>
 
               <!-- !! Confirm Password -->
               <v-text-field
-                v-model="password"
-                :rules="passwordRules"
+                v-model="formData.confirmPassword"
+                :append-inner-icon="
+                  visibleConfirmPass ? 'mdi-eye-off' : 'mdi-eye'
+                "
+                :type="visibleConfirmPass ? 'text' : 'password'"
                 label="Confirm Password"
                 variant="outlined"
                 type="password"
+                class="mt-3"
+                @click:append-inner="visibleConfirmPass = !visibleConfirmPass"
+                :rules="[
+                  requiredValidator,
+                  confirmedValidator(
+                    formData.confirmPassword,
+                    formData.password,
+                  ),
+                ]"
               ></v-text-field>
 
               <v-btn
@@ -62,6 +150,8 @@ import AppLayout from '@/components/layout/AppLayout.vue'
                 size="x-large"
                 class="mt-2"
                 type="submit"
+                :disabled="formAction.formProcess"
+                :loading="formAction.formProcess"
                 >Register</v-btn
               >
               <p class="text-center mt-3">Forgot Password?</p>
