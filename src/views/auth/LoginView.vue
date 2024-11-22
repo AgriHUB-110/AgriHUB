@@ -1,10 +1,14 @@
 <script setup>
-import { ref } from 'vue'
-const visiblePass = ref(false)
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import { requiredValidator, emailValidator } from '@/utils/validator'
-// import notif from '@/components/common/notif.vue'
+import { supabase, formActionDefault } from '@/utils/supabase.js'
+import notif from '@/components/common/notif.vue'
+
+const visiblePass = ref(false)
 const refVform = ref()
+const router = useRouter()
 
 const formDataDefault = {
   email: '',
@@ -14,39 +18,69 @@ const formData = ref({
   ...formDataDefault,
 })
 
-const onLogin = () => {
-  // Your login logic here
-  alert('Miss kita')
-  // console.log('Login Successful')
+const formAction = reactive({
+  ...formActionDefault,
+})
+
+const checkSession = async () => {
+  const { data } = await supabase.auth.getSession()
+  if (data.session) {
+    // Session exists, route to /Home
+    router.replace('/Home')
+  }
 }
+
+const onLogin = async () => {
+  formAction.formProcess = true
+  formAction.formErrorMessage = ''
+
+  const { email, password } = formData.value
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) {
+    formAction.formErrorMessage = 'Login failed: ' + error.message
+    formAction.formSuccessMessage = ''
+    formAction.formProcess = false
+  } else {
+    formAction.formSuccessMessage = 'Logging in...'
+
+    setTimeout(() => {
+      formAction.formErrorMessage = ''
+      formAction.formSuccessMessage = 'Login successful'
+      formAction.formProcess = false
+      router.replace('/Home')
+    }, 2000)  // 2-second delay
+  }
+}
+
 
 const onFormSubmit = () => {
   refVform.value?.validate().then(({ valid }) => {
     if (valid) onLogin()
   })
 }
+
+// Check session on component mount
+onMounted(() => {
+  checkSession()
+})
 </script>
 
 <template>
   <AppLayout>
     <template #content>
-      <!-- ! 1 row -->
       <v-row class="d-flex justify-center">
-        <!-- ! 1 col -->
         <v-col cols="12" md="6" class="mx-auto">
-          <!-- !! v card -->
           <v-card class="glass-card border-thin" text="">
-            <!-- <notif
+            <notif
               :form-success-message="formAction.formSuccessMessage"
               :form-error-message="formAction.formErrorMessage"
-            ></notif> -->
+            ></notif>
 
             <v-form
               ref="refVform"
               class="px-3 pb-5 mt-5"
               @submit.prevent="onFormSubmit"
             >
-              <!-- !! Email -->
               <v-text-field
                 v-model="formData.email"
                 label="Email"
@@ -54,7 +88,6 @@ const onFormSubmit = () => {
                 :rules="[requiredValidator, emailValidator]"
               ></v-text-field>
 
-              <!-- !! Password -->
               <v-text-field
                 class="pt-3"
                 v-model="formData.password"
@@ -63,7 +96,6 @@ const onFormSubmit = () => {
                 @click:append-inner="visiblePass = !visiblePass"
                 label="Password"
                 variant="outlined"
-                type="password"
                 :rules="[requiredValidator]"
               ></v-text-field>
 
@@ -74,19 +106,22 @@ const onFormSubmit = () => {
                 size="x-large"
                 class="mt-2 mx-auto d-flex mb-5"
                 type="submit"
+                :disabled="formAction.formProcess"
+                :loading="formAction.formProcess"
                 >Login</v-btn
               >
+
               <v-divider class="my-5"></v-divider>
               <p class="text-center mt-3">Forgot Password?</p>
               <br />
               <p class="text-center">
                 Don't have an account?
                 <RouterLink to="/register" class="text-primary"
-                  >Sign up</RouterLink
-                >
+                  >Sign up</RouterLink>
               </p>
-              <br /> </v-form
-          ></v-card>
+              <br />
+            </v-form>
+          </v-card>
         </v-col>
       </v-row>
     </template>
