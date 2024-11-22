@@ -9,10 +9,12 @@ import {
   passwordValidator,
   confirmedValidator,
 } from '@/utils/validator'
+import { supabase, formActionDefault } from '@/utils/supabase.js'
+import notif from '@/components/common/notif.vue'
 const refVform = ref()
 
 const formDataDefault = {
-  firsname: '',
+  firstname: '',
   lastname: '',
   email: '',
   password: '',
@@ -22,10 +24,37 @@ const formData = ref({
   ...formDataDefault,
 })
 
-const onRegister = () => {
+const formAction = ref({
+  ...formActionDefault,
+})
+
+const onRegister = async () => {
   // Your login logic here
-  alert("Miss kita")
-  // console.log('Login Successful')
+  // alert('Miss kita')
+  formAction.value = { ...formActionDefault }
+  formAction.value.formProcess = true
+  const { data, error } = await supabase.auth.signUp({
+    email: formData.value.email,
+    password: formData.value.password,
+    options: {
+      data: {
+        firstname: formData.value.firstname,
+        lastname: formData.value.lastname,
+      },
+    },
+  })
+
+  if (error) {
+    console.log(error)
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+  } else if (data) {
+    console.log(data)
+    formAction.value.formSuccessMessage = 'Successfully Registered :)'
+    refVform.value?.reset()
+  }
+
+  formAction.value.formProcess = false
 }
 
 const onFormSubmit = () => {
@@ -44,8 +73,16 @@ const onFormSubmit = () => {
         <v-col cols="12" md="6" class="mx-auto">
           <!-- !! v card -->
           <v-card class="glass-card border-thin" text="">
+            <notif
+              :form-success-message="formAction.formSuccessMessage"
+              :form-error-message="formAction.formErrorMessage"
+            ></notif>
             <!-- !! form -->
-            <v-form ref="refVform" class="px-3 pb-3" @submit.prevent="onFormSubmit">
+            <v-form
+              ref="refVform"
+              class="px-3 pb-3 pt-5"
+              @submit.prevent="onFormSubmit"
+            >
               <!-- !! first name -->
               <v-text-field
                 v-model="formData.firstName"
@@ -113,6 +150,8 @@ const onFormSubmit = () => {
                 size="x-large"
                 class="mt-2"
                 type="submit"
+                :disabled="formAction.formProcess"
+                :loading="formAction.formProcess"
                 >Register</v-btn
               >
               <p class="text-center mt-3">Forgot Password?</p>
