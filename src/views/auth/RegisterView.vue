@@ -62,6 +62,15 @@ const onFormSubmit = () => {
     if (valid) onRegister()
   })
 }
+
+// Function to check user session
+const checkSession = async () => {
+  const { data } = await supabase.auth.getSession()
+  if (data.session) {
+    // If session exists, redirect to /Home
+    router.replace('/Home')
+  }
+}
 </script>
 
 <template>
