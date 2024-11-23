@@ -1,32 +1,35 @@
 <script setup>
 import { ref } from 'vue'
 
-const theme = ref(localStorage.getItem('theme') ?? 'light')
+const theme = ref('light')
 
 function onClick() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', theme.value)
 }
 </script>
 
 <template>
   <v-responsive class="border rounded">
-    <v-app :theme="theme">
-      <v-app-bar class="px-3" color="light-blue-lighten-2">
+    <v-app>
+      <v-app-bar
+        class="px-3"
+        :color="theme === 'dark' ? 'black' : 'light-green lighten-2'"
+        flat
+      >
         <v-spacer></v-spacer>
-
         <v-btn
           :prepend-icon="
             theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'
           "
-          text="Toggle Theme"
+          text="AgriHub"
+          
           slim
           @click="onClick"
         ></v-btn>
       </v-app-bar>
 
-      <v-main>
-        <v-container>
+      <v-main class="main-background">
+        <v-container >
           <slot name="content"></slot>
         </v-container>
       </v-main>

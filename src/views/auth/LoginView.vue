@@ -70,9 +70,19 @@ onMounted(() => {
 <template>
   <AppLayout>
     <template #content>
+      <br><br>
       <v-row class="d-flex justify-center">
-        <v-col cols="12" md="6" class="mx-auto">
-          <v-card class="glass-card border-thin" text="">
+        <v-col cols="12" md="6" class="mx-auto glass-card">
+          <v-card-title>
+            <v-img
+              src="/public/images/logo.jpg"
+              height="200"
+              class="my-2"
+            ></v-img>
+            <h2 class="my-3 text-center">AgriHub</h2></v-card-title
+          >
+          <v-divider class="my-2"></v-divider>
+
             <!-- Notification component to show success and error messages -->
             <notif
               :form-success-message="formAction.formSuccessMessage"
@@ -90,6 +100,7 @@ onMounted(() => {
                 label="Email"
                 variant="outlined"
                 :rules="[requiredValidator, emailValidator]"
+                 prepend-inner-icon="mdi-email"
               ></v-text-field>
 
               <!-- Password input field with visibility toggle and validation rules -->
@@ -105,19 +116,20 @@ onMounted(() => {
               ></v-text-field>
 
               <!-- Login button with loading state -->
+              <v-divider class="my-2"></v-divider>
               <v-btn
                 block
                 variant="outlined"
                 rounded="xl"
                 size="x-large"
-                class="mt-2 mx-auto d-flex mb-5"
+                class="mt-2 mx-auto d-flex mb-5  mb-5 mdi mdi-login"
                 type="submit"
                 :disabled="formAction.formProcess"
                 :loading="formAction.formProcess"
                 >Login</v-btn
               >
 
-              <v-divider class="my-5"></v-divider>
+             
               <p class="text-center mt-3">Forgot Password?</p>
               <br />
               <p class="text-center">
@@ -127,9 +139,10 @@ onMounted(() => {
               </p>
               <br />
             </v-form>
-          </v-card>
         </v-col>
       </v-row>
+      <br /><br />
+      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </template>
   </AppLayout>
 </template>
