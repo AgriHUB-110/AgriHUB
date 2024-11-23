@@ -1,18 +1,17 @@
 <script setup>
 import { ref } from 'vue'
 
-const theme = ref(localStorage.getItem('theme') ?? 'light')
+const theme = ref('light')
 
 function onClick() {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
-  localStorage.setItem('theme', theme.value)
 }
 </script>
 
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
-      <v-app-bar class="px-3" color="light-blue-lighten-2">
+      <v-app-bar class="px-3" color="light-green-lighten-2">
         <v-spacer></v-spacer>
 
         <v-btn
@@ -25,8 +24,8 @@ function onClick() {
         ></v-btn>
       </v-app-bar>
 
-      <v-main>
-        <v-container>
+      <v-main class="main-background">
+        <v-container >
           <slot name="content"></slot>
         </v-container>
       </v-main>

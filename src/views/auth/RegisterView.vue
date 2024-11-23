@@ -77,101 +77,178 @@ const checkSession = async () => {
   <AppLayout>
     <template #content>
       <!-- ! 1 row -->
+      <br /><br />
       <v-row class="d-flex justify-center">
         <!-- ! 1 col -->
-        <v-col cols="12" md="6" class="mx-auto">
+        <v-col cols="12" md="10" class="mx-auto glass-card">
+          <v-card-title>
+            <v-img
+              src="/public/images/logo.jpg"
+              height="200"
+              class="my-2"
+            ></v-img>
+            <h2 class="my-3 text-center">AgriHub</h2></v-card-title
+          >
+          <h2 class="my-2 text-center"><b>Registration Form</b></h2>
+          <v-divider class="my-2"></v-divider>
           <!-- !! v card -->
-          <v-card class="glass-card border-thin" text="">
-            <notif
-              :form-success-message="formAction.formSuccessMessage"
-              :form-error-message="formAction.formErrorMessage"
-            ></notif>
-            <!-- !! form -->
-            <v-form
-              ref="refVform"
-              class="px-3 pb-3 pt-5"
-              @submit.prevent="onFormSubmit"
+
+          <notif
+            :form-success-message="formAction.formSuccessMessage"
+            :form-error-message="formAction.formErrorMessage"
+          ></notif>
+          <!-- !! form -->
+          <v-form
+            ref="refVform"
+            class="px-3 pb-3 pt-5"
+            @submit.prevent="onFormSubmit"
+          >
+            <v-row>
+              <v-col cols="12" md="6">
+                <!-- !! first name -->
+                <v-text-field
+                  v-model="formData.firstName"
+                  label="First Name"
+                  variant="outlined"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+
+                <!-- !! last name -->
+                <v-text-field
+                  v-model="formData.lastName"
+                  label="Last Name"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <!-- !! usertype -->
+                <v-text-field
+                  v-model="formData.lastName"
+                  label="User Type"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+
+                <!-- !! address -->
+                <v-text-field
+                  v-model="formData.email"
+                  label="Address"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator, emailValidator]"
+                ></v-text-field>
+                <!-- !! country-->
+                <v-text-field
+                  v-model="formData.email"
+                  label="Country"
+                  variant="outlined"
+                  class="mt-3"
+                  @click:append-inner="visiblePass = !visiblePass"
+                  :rules="[requiredValidator, emailValidator]"
+                ></v-text-field>
+                <v-text-field
+                  v-model="formData.phone"
+                  label="Zip-code"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator]"
+                  
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <!-- !! city -->
+                <v-text-field
+                  v-model="formData.firstName"
+                  label="City"
+                  variant="outlined"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+
+                <!-- !! state -->
+                <v-text-field
+                  v-model="formData.lastName"
+                  label="State"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+
+                <v-text-field
+                  v-model="formData.email"
+                  label="Email"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator, emailValidator]"
+                  prepend-inner-icon="mdi-email"
+                ></v-text-field>
+
+                <v-text-field
+                  v-model="formData.phone"
+                  label="Phone"
+                  variant="outlined"
+                  class="mt-3"
+                  :rules="[requiredValidator]"
+                  prepend-inner-icon="mdi-phone"
+                ></v-text-field>
+                <!-- !! Password -->
+                <v-text-field
+                  v-model="formData.password"
+                  :append-inner-icon="visiblePass ? 'mdi-eye-off' : 'mdi-eye'"
+                  :type="visiblePass ? 'text' : 'password'"
+                  label="Password"
+                  variant="outlined"
+                  type="password"
+                  class="mt-3"
+                  @click:append-inner="visiblePass = !visiblePass"
+                  :rules="[requiredValidator, passwordValidator]"
+                ></v-text-field>
+
+                <!-- !! Confirm Password -->
+                <v-text-field
+                  v-model="formData.confirmPassword"
+                  :append-inner-icon="
+                    visibleConfirmPass ? 'mdi-eye-off' : 'mdi-eye'
+                  "
+                  :type="visibleConfirmPass ? 'text' : 'password'"
+                  label="Confirm Password"
+                  variant="outlined"
+                  type="password"
+                  class="mt-3"
+                  @click:append-inner="visibleConfirmPass = !visibleConfirmPass"
+                  :rules="[
+                    requiredValidator,
+                    confirmedValidator(
+                      formData.confirmPassword,
+                      formData.password,
+                    ),
+                  ]"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-divider class="my-2"></v-divider>
+            <v-btn
+              block
+              variant="outlined"
+              rounded="xl"
+              size="x-large"
+              class="mt-2"
+              type="submit"
+              :disabled="formAction.formProcess"
+              :loading="formAction.formProcess"
+              ><span class="mdi mdi-account-plus"><b>Register</b></span></v-btn
             >
-              <!-- !! first name -->
-              <v-text-field
-                v-model="formData.firstName"
-                label="First Name"
-                variant="outlined"
-                :rules="[requiredValidator]"
-              ></v-text-field>
+            <p class="text-center mt-3">Forgot Password?</p>
 
-              <!-- !! last name -->
-              <v-text-field
-                v-model="formData.lastName"
-                label="Last Name"
-                variant="outlined"
-                class="mt-3"
-                :rules="[requiredValidator]"
-              ></v-text-field>
-
-              <!-- !! Email -->
-              <v-text-field
-                v-model="formData.email"
-                label="Email"
-                variant="outlined"
-                class="mt-3"
-                :rules="[requiredValidator, emailValidator]"
-              ></v-text-field>
-
-              <!-- !! Password -->
-              <v-text-field
-                v-model="formData.password"
-                :append-inner-icon="visiblePass ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="visiblePass ? 'text' : 'password'"
-                label="Password"
-                variant="outlined"
-                type="password"
-                class="mt-3"
-                @click:append-inner="visiblePass = !visiblePass"
-                :rules="[requiredValidator, passwordValidator]"
-              ></v-text-field>
-
-              <!-- !! Confirm Password -->
-              <v-text-field
-                v-model="formData.confirmPassword"
-                :append-inner-icon="
-                  visibleConfirmPass ? 'mdi-eye-off' : 'mdi-eye'
-                "
-                :type="visibleConfirmPass ? 'text' : 'password'"
-                label="Confirm Password"
-                variant="outlined"
-                type="password"
-                class="mt-3"
-                @click:append-inner="visibleConfirmPass = !visibleConfirmPass"
-                :rules="[
-                  requiredValidator,
-                  confirmedValidator(
-                    formData.confirmPassword,
-                    formData.password,
-                  ),
-                ]"
-              ></v-text-field>
-
-              <v-btn
-                block
-                variant="outlined"
-                rounded="xl"
-                size="x-large"
-                class="mt-2"
-                type="submit"
-                :disabled="formAction.formProcess"
-                :loading="formAction.formProcess"
-                >Register</v-btn
-              >
-              <p class="text-center mt-3">Forgot Password?</p>
-              <br />
-              <p class="text-center">
-                Already have an account?
-                <RouterLink to="/" class="text-primary">Login</RouterLink>
-              </p>
-              <br /> </v-form
-          ></v-card>
-        </v-col> </v-row
-    ></template>
+            <p class="text-center">
+              Already have an account?
+              <RouterLink to="/" class="text-primary">Login</RouterLink>
+            </p>
+          </v-form>
+        </v-col>
+      </v-row>
+      <br /><br />
+      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
+    </template>
   </AppLayout>
 </template>
