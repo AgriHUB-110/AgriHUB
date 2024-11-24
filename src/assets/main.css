@@ -1,6 +1,9 @@
 @import './base.css';
 
-
+html,
+body{
+  font-family: 'Monument Extended';
+}
 
 .glass-card {
   background: rgba(255, 255, 255, 0.15);

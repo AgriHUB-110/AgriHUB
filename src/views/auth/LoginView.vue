@@ -79,7 +79,7 @@ onMounted(() => {
               height="200"
               class="my-2"
             ></v-img>
-            <h2 class="my-3 text-center">AgriHub</h2></v-card-title
+            <h2 class="my-3 text-center font-family: 'Monument Extended';" >AgriHub</h2></v-card-title
           >
           <v-divider class="my-2"></v-divider>
 

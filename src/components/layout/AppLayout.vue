@@ -10,19 +10,15 @@ function onClick() {
 
 <template>
   <v-responsive class="border rounded">
-    <v-app>
-      <v-app-bar
-        class="px-3"
-        :color="theme === 'dark' ? 'black' : 'light-green lighten-2'"
-        flat
-      >
+    <v-app :theme="theme">
+      <v-app-bar class="px-3" color="light-green-lighten-2">
         <v-spacer></v-spacer>
+
         <v-btn
           :prepend-icon="
             theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'
           "
-          text="AgriHub"
-          
+          text="Toggle Theme"
           slim
           @click="onClick"
         ></v-btn>
