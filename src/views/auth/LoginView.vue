@@ -27,7 +27,7 @@ const checkSession = async () => {
   const { data } = await supabase.auth.getSession()
   if (data.session) {
     // If session exists, redirect to /Home
-    router.replace('/Home')
+    // router.replace('/')
   }
 }
 
@@ -49,7 +49,7 @@ const onLogin = async () => {
       formAction.formErrorMessage = ''
       formAction.formSuccessMessage = 'Login successful'
       formAction.formProcess = false
-      router.replace('/Home')
+      router.replace('/')
     }, 2000)  // 2-second delay
   }
 }
@@ -129,7 +129,7 @@ onMounted(() => {
                 >Login</v-btn
               >
 
-             
+
               <p class="text-center mt-3">Forgot Password?</p>
               <br />
               <p class="text-center">

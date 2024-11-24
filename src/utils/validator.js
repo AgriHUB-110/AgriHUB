@@ -133,3 +133,17 @@ export const imageValidator = (value) => {
 
   return !value || !value.length || value[0].size < 2000000 || 'Image size should be less than 2 MB'
 }
+
+
+
+// 👉 Philippine Phone Number Validator
+export const phoneNumberValidator = (value) => {
+  if (isEmpty(value)) return true;
+
+  const phoneRegex = /^09\d{9}$/;
+
+  if (Array.isArray(value))
+    return value.every((val) => phoneRegex.test(String(val))) || 'This field must be a valid phone number in the format 09123456789';
+
+  return phoneRegex.test(String(value)) || 'This field must be a valid phone number in the format 09123456789';
+};

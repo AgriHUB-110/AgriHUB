@@ -9,14 +9,30 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'home',
+      component: HomeView,
+      beforeEnter: async (to, from, next) => {
+        // Check if the user is logged in
+        const { data } = await supabase.auth.getSession()
+        // If a session exists, allow access to the home view
+        if (data.session) {
+          next()
+        } else {
+          // If no session exists, allow access to the home view
+          next()
+        }
+      },
+    },
+    {
+      path: '/login',
       name: 'login',
       component: LoginView,
       beforeEnter: async (to, from, next) => {
         // Check if the user is logged in
         const { data } = await supabase.auth.getSession()
-        // If a session exists, redirect to /home
+        // If a session exists, redirect to home
         if (data.session) {
-          next('/home')
+          next('/')
         } else {
           next()
         }
@@ -29,27 +45,11 @@ const router = createRouter({
       beforeEnter: async (to, from, next) => {
         // Check if the user is logged in
         const { data } = await supabase.auth.getSession()
-        // If a session exists, redirect to /home
+        // If a session exists, redirect to home
         if (data.session) {
-          next('/home')
-        } else {
-          next()
-        }
-      },
-    },
-    {
-      path: '/home',
-      name: 'home',
-      component: HomeView,
-      beforeEnter: async (to, from, next) => {
-        // Check if the user is logged in
-        const { data } = await supabase.auth.getSession()
-        // If a session exists, allow access to /home
-        if (data.session) {
-          next()
-        } else {
-          // If no session exists, redirect to /
           next('/')
+        } else {
+          next()
         }
       },
     },
