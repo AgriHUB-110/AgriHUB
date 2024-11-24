@@ -274,7 +274,7 @@ const checkSession = async () => {
 
             <p class="text-center">
               Already have an account?
-              <RouterLink to="/" class="text-primary">Login</RouterLink>
+              <RouterLink to="/login" class="text-primary">Login</RouterLink>
             </p>
           </v-form>
         </v-col>

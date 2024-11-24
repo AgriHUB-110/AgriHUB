@@ -78,6 +78,7 @@ onMounted(() => {
               src="/public/images/logo.jpg"
               height="200"
               class="my-2"
+              alt = "Logo"
             ></v-img>
             <h2 class="my-3 text-center font-family: 'Monument Extended';" >AgriHub</h2></v-card-title
           >
