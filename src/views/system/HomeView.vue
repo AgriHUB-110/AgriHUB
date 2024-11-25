@@ -1,8 +1,8 @@
 <script setup>
-import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js'
+import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js' // Importing the functions
 import { useRouter } from 'vue-router'
 
-useHomeView()
+useHomeView() // Initialize the setup
 const router = useRouter()
 
 const goToProfile = () => {
