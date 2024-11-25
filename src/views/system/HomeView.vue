@@ -1,59 +1,36 @@
-<script setup>
-import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js' // Importing the functions
-
-useHomeView() // Initialize the setup
-</script>
-
-<style scoped>
-.v-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-}
-</style>
-
 <template>
   <v-app>
     <v-main>
-      <div>
-        <v-toolbar color="light-green-lighten-2">
-          <v-toolbar-title>AgriHUB</v-toolbar-title>
-
-          <v-btn>
-            <h5>About</h5>
-          </v-btn>
-          <v-btn>
-            <h5>Projects</h5>
-          </v-btn>
-          <v-btn>
-            <h5>Insights</h5>
-          </v-btn>
-          <v-btn>
-            <h5>Locations</h5>
-          </v-btn>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            v-if="!isLoggedIn"
-            variant="outlined"
-            class="rounded bg-white mr-5"
-            :to="{ path: '/login' }"
-          >
-            Sign in
-          </v-btn>
-
-          <v-btn
-            v-if="!isLoggedIn"
-            variant="outlined"
-            class="rounded mr-5"
-            :to="{ path: '/register' }"
-          >
-            Sign up
-          </v-btn>
-          <v-btn v-if="isLoggedIn" icon @click="onLogout">
-            <v-icon>mdi-export</v-icon>
-          </v-btn>
-        </v-toolbar>
-      </div>
+      <v-toolbar color="light-green-lighten-2">
+        <v-toolbar-title>AgriHUB</v-toolbar-title>
+        <v-btn><h5>About</h5></v-btn>
+        <v-btn><h5>Projects</h5></v-btn>
+        <v-btn><h5>Insights</h5></v-btn>
+        <v-btn><h5>Locations</h5></v-btn>
+        <v-btn @click="goToProfile"><h5>Profile</h5></v-btn>
+        <v-spacer></v-spacer>
+        
+        <v-btn
+          v-if="!isLoggedIn"
+          variant="outlined"
+          class="rounded bg-white mr-5"
+          :to="{ path: '/login' }"
+        >
+          Sign in
+        </v-btn>
+        <v-btn
+          v-if="!isLoggedIn"
+          variant="outlined"
+          class="rounded mr-5"
+          :to="{ path: '/register' }"
+        >
+          Sign up
+        </v-btn>
+        <v-btn v-if="isLoggedIn" icon @click="handleLogout">
+          <v-icon>mdi-export</v-icon>
+        </v-btn>
+      </v-toolbar>
+      
       <v-container fluid class="bg-light-green-lighten-2">
         <v-row class="d-flex justify-center">
           <v-divider :thickness="2"></v-divider>
@@ -68,7 +45,7 @@ useHomeView() // Initialize the setup
               single-line
             ></v-text-field>
 
-            <!-- !! items area -->
+            <!-- Items area -->
             <v-row>
               <v-col cols="4">
                 <v-card text="Image here" variant="outlined"></v-card>
@@ -95,7 +72,7 @@ useHomeView() // Initialize the setup
                 outlined
                 color="error"
                 class="ma-4"
-                @click="onLogout"
+                @click="handleLogout"
                 >Logout</v-btn
               >
             </v-card>
@@ -105,3 +82,27 @@ useHomeView() // Initialize the setup
     </v-main>
   </v-app>
 </template>
+
+<script setup>
+import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js'
+import { useRouter } from 'vue-router'
+
+useHomeView()
+const router = useRouter()
+
+const goToProfile = () => {
+  router.push('/profile'); // Use Vue Router to navigate to the ProfileView
+};
+
+const handleLogout = async () => {
+  await onLogout();
+  router.push('/'); // Redirect to HomeView after logout
+}
+</script>
+
+<style scoped>
+.v-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+}
+</style>

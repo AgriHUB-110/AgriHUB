@@ -23,8 +23,9 @@ export const onLogout = async () => {
   try {
     await supabase.auth.signOut()
     isLoggedIn.value = false
-    // Refresh the page after logout
-    window.location.reload()
+    userEmail.value = 'Not logged in'
+    // Redirect to HomeView after logout
+    window.location.href = '/'
   } catch (error) {
     console.error('Error logging out:', error)
   }
