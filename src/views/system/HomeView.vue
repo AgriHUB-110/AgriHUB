@@ -1,3 +1,27 @@
+<script setup>
+import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js'
+import { useRouter } from 'vue-router'
+
+useHomeView()
+const router = useRouter()
+
+const goToProfile = () => {
+  router.push('/profile'); // Use Vue Router to navigate to the ProfileView
+};
+
+const handleLogout = async () => {
+  await onLogout();
+  router.push('/'); // Redirect to HomeView after logout
+}
+</script>
+
+<style scoped>
+.v-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+}
+</style>
+
 <template>
   <v-app>
     <v-main>
@@ -82,27 +106,3 @@
     </v-main>
   </v-app>
 </template>
-
-<script setup>
-import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js'
-import { useRouter } from 'vue-router'
-
-useHomeView()
-const router = useRouter()
-
-const goToProfile = () => {
-  router.push('/profile'); // Use Vue Router to navigate to the ProfileView
-};
-
-const handleLogout = async () => {
-  await onLogout();
-  router.push('/'); // Redirect to HomeView after logout
-}
-</script>
-
-<style scoped>
-.v-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-}
-</style>
