@@ -2,11 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 import HomeView from '@/views/system/HomeView.vue'
+import ProfileView from '@/views/system/ProfileView.vue'
 import { supabase } from '@/utils/supabase.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+    },
+    
     {
       path: '/',
       name: 'home',
