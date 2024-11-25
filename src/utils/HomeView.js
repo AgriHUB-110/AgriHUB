@@ -23,7 +23,7 @@ export const onLogout = async () => {
   try {
     await supabase.auth.signOut()
     isLoggedIn.value = false
-        // Refresh the page after logout
+    // Refresh the page after logout
     window.location.reload()
   } catch (error) {
     console.error('Error logging out:', error)
