@@ -9,10 +9,6 @@ const goToProfile = () => {
   router.push('/profile'); // Use Vue Router to navigate to the ProfileView
 };
 
-const handleLogout = async () => {
-  await onLogout();
-  router.push('/'); // Redirect to HomeView after logout
-}
 </script>
 
 <style scoped>
@@ -51,7 +47,7 @@ const handleLogout = async () => {
         >
           Sign up
         </v-btn>
-        <v-btn v-if="isLoggedIn" icon @click="handleLogout">
+        <v-btn v-if="isLoggedIn" icon @click="onLogout">
           <v-icon>mdi-export</v-icon>
         </v-btn>
       </v-toolbar>
