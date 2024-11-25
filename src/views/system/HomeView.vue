@@ -25,7 +25,8 @@ const handleLogout = async () => {
 <template>
   <v-app>
     <v-main>
-      <v-toolbar color="light-green-lighten-2">
+      <div>
+        <v-toolbar color="light-green-lighten-2">
         <v-toolbar-title>AgriHUB</v-toolbar-title>
         <v-btn><h5>About</h5></v-btn>
         <v-btn><h5>Projects</h5></v-btn>
@@ -54,6 +55,7 @@ const handleLogout = async () => {
           <v-icon>mdi-export</v-icon>
         </v-btn>
       </v-toolbar>
+      </div>
       
       <v-container fluid class="bg-light-green-lighten-2">
         <v-row class="d-flex justify-center">
@@ -69,7 +71,7 @@ const handleLogout = async () => {
               single-line
             ></v-text-field>
 
-            <!-- Items area -->
+            <!-- !! items area -->
             <v-row>
               <v-col cols="4">
                 <v-card text="Image here" variant="outlined"></v-card>
@@ -96,7 +98,7 @@ const handleLogout = async () => {
                 outlined
                 color="error"
                 class="ma-4"
-                @click="handleLogout"
+                @click="onLogout"
                 >Logout</v-btn
               >
             </v-card>
