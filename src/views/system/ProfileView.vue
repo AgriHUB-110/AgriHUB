@@ -7,19 +7,19 @@
             <v-card class="profile-card pa-5">
               <h1 class="text-h4 mb-4">Profile Settings</h1>
               <v-list dense>
-                <v-list-item @click="showModal('myorders')">
+                <v-list-item @click="showModal('myOrders')">
                   <v-list-item-icon>
                     <v-icon>mdi-package-variant</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>My Orders</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="showModal('buyproducts')">
+                <v-list-item @click="showModal('buyProducts')">
                   <v-list-item-icon>
                     <v-icon>mdi-cart-plus</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Buy Products</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="showModal('sellproducts')">
+                <v-list-item @click="showModal('sellProducts')">
                   <v-list-item-icon>
                     <v-icon>mdi-cash</v-icon>
                   </v-list-item-icon>
@@ -61,12 +61,12 @@
 
         <!-- Modals -->
         <!-- My Orders Modal -->
-        <v-dialog v-model="modals.myProfile" max-width="600">
+        <v-dialog v-model="modals.myOrders" max-width="600">
           <v-card>
             <v-toolbar flat>
               <v-toolbar-title>My Orders</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('myProfile')">
+              <v-btn icon @click="closeModal('myOrders')">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
@@ -77,12 +77,12 @@
         </v-dialog>
 
         <!-- Buy Products Modal -->
-        <v-dialog v-model="modals.buyproducts" max-width="600">
+        <v-dialog v-model="modals.buyProducts" max-width="600">
           <v-card>
             <v-toolbar flat>
               <v-toolbar-title>Buy Products</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('buyproducts')">
+              <v-btn icon @click="closeModal('buyProducts')">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
@@ -93,12 +93,12 @@
         </v-dialog>
 
         <!-- Sell Products Modal -->
-        <v-dialog v-model="modals.sellproducts" max-width="600">
+        <v-dialog v-model="modals.sellProducts" max-width="600">
           <v-card>
             <v-toolbar flat>
               <v-toolbar-title>Sell Products</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('sellproducts')">
+              <v-btn icon @click="closeModal('sellProducts')">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
@@ -185,13 +185,13 @@ const router = useRouter()
 
 // Modal visibility states
 const modals = ref({
-  myProfile: false,
+  myOrders: false,
   mySubscriptions: false,
   paymentMethod: false,
   orderTracking: false,
   wishlist: false,
-  buyproducts: false,
-  sellproducts: false
+  buyProducts: false,
+  sellProducts: false
 })
 
 const showModal = (modal) => {
