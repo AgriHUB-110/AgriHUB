@@ -75,7 +75,7 @@ onMounted(() => {
         <v-col cols="12" md="6" class="mx-auto glass-card">
           <v-card-title>
             <v-img
-              src="/public/images/logo.jpg"
+              src="images/logo.jpg"
               height="200"
               class="my-2"
               alt = "Logo"

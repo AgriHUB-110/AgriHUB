@@ -119,7 +119,7 @@ const checkSession = async () => {
         <v-col cols="12" md="10" class="mx-auto glass-card">
           <v-card-title>
             <v-img
-              src="/public/images/logo.jpg"
+              src="/images/logo.jpg"
               height="200"
               class="my-2"
             ></v-img>
