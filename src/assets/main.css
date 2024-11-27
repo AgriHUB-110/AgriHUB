@@ -15,7 +15,7 @@ body{
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .main-background {
-  background-image: url('/public/images/agri2.jpg');
+  background-image: url('/images/agri2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
