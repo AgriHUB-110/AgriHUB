@@ -1,8 +1,10 @@
 <script setup>
+  
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout is properly implemented
-
+import headerAH from '@/components/common/headerAH.vue'
+  
 const router = useRouter()
 
 // Modal visibility states
