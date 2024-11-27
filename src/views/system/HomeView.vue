@@ -6,10 +6,10 @@ import {
   onLogout,
 } from '@/utils/HomeView.js' // Importing the functions
 import { useRouter } from 'vue-router'
+import productList from '@/components/common/productList.vue'
 
 useHomeView() // Initialize the setup
 const router = useRouter()
-
 </script>
 
 <style scoped>
@@ -67,7 +67,7 @@ const router = useRouter()
             ></v-text-field>
 
             <!-- !! items area -->
-            <v-row>
+            <!-- <v-row>
               <v-col cols="4">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
@@ -77,7 +77,9 @@ const router = useRouter()
               <v-col cols="4">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
-            </v-row>
+            </v-row> -->
+
+<productList></productList>
 
             <v-card class="pa-5">
               <h1 class="text-h3 mb-3">Welcome to Our Site!</h1>
@@ -97,6 +99,7 @@ const router = useRouter()
                 >Logout</v-btn
               >
             </v-card>
+
             <br />
             <br />
             <br />
