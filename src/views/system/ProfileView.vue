@@ -1,3 +1,32 @@
+<script setup>
+import { useRouter } from 'vue-router'
+import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout function is imported correctly
+
+const router = useRouter()
+
+const handleLogout = async () => {
+  await onLogout() // Call the logout function
+  router.push('/') // Redirect to HomeView.vue after logout
+}
+</script>
+
+<style scoped>
+.profile-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.v-list-item {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.v-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+</style>
+
 <template>
   <v-app>
     <v-main>
@@ -43,32 +72,3 @@
     </v-main>
   </v-app>
 </template>
-
-<script setup>
-import { useRouter } from 'vue-router'
-import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout function is imported correctly
-
-const router = useRouter()
-
-const handleLogout = async () => {
-  await onLogout() // Call the logout function
-  router.push('/') // Redirect to HomeView.vue after logout
-}
-</script>
-
-<style scoped>
-.profile-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.v-list-item {
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.v-list-item:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-</style>
