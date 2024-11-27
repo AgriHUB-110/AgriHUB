@@ -13,8 +13,19 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+      beforeEnter: async (to, from, next) => {
+        // Check if the user is logged in
+        const { data } = await supabase.auth.getSession()
+        // If a session exists, allow access to the profile view
+        if (data.session) {
+          next()
+        } else {
+          // If no session exists, redirect to login
+          next('/login')
+        }
+      }
     },
-    
+
     {
       path: '/',
       name: 'home',
