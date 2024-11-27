@@ -1,6 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout function is imported correctly
+import { onLogout } from '@/utils/HomeView.js'
+import headerAH from '@/components/common/headerAH.vue'
 
 const router = useRouter()
 
@@ -30,6 +31,7 @@ const handleLogout = async () => {
 <template>
   <v-app>
     <v-main>
+      <headerAH></headerAH>
       <v-container>
         <v-row justify="center">
           <v-col cols="12" md="8">

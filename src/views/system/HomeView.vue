@@ -1,13 +1,14 @@
 <script setup>
-import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js' // Importing the functions
+import {
+  useHomeView,
+  userEmail,
+  isLoggedIn,
+  onLogout,
+} from '@/utils/HomeView.js' // Importing the functions
 import { useRouter } from 'vue-router'
 
 useHomeView() // Initialize the setup
 const router = useRouter()
-
-const goToProfile = () => {
-  router.push('/profile'); // Use Vue Router to navigate to the ProfileView
-};
 
 </script>
 
@@ -21,16 +22,15 @@ const goToProfile = () => {
 <template>
   <v-app>
     <v-main>
-      <div>
-        <v-toolbar color="light-green-lighten-2">
+      <v-toolbar color="light-green-lighten-2">
         <v-toolbar-title>AgriHUB</v-toolbar-title>
         <v-btn><h5>About</h5></v-btn>
         <v-btn><h5>Projects</h5></v-btn>
         <v-btn><h5>Insights</h5></v-btn>
         <v-btn><h5>Locations</h5></v-btn>
-        <v-btn @click="goToProfile"><h5>Profile</h5></v-btn>
+        <v-btn :to="{ path: '/profile' }"><h5>Profile</h5></v-btn>
         <v-spacer></v-spacer>
-        
+
         <v-btn
           v-if="!isLoggedIn"
           variant="outlined"
@@ -51,8 +51,7 @@ const goToProfile = () => {
           <v-icon>mdi-export</v-icon>
         </v-btn>
       </v-toolbar>
-      </div>
-      
+
       <v-container fluid class="bg-light-green-lighten-2">
         <v-row class="d-flex justify-center">
           <v-divider :thickness="2"></v-divider>
@@ -98,6 +97,25 @@ const goToProfile = () => {
                 >Logout</v-btn
               >
             </v-card>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
           </v-col>
         </v-row>
       </v-container>
