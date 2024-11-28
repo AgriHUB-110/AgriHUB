@@ -3,7 +3,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout is properly implemented
 import headerAH from '@/components/common/headerAH.vue'
-  
+import UserProfile from '@/components/common/userProfile.vue';
+
 const router = useRouter()
 
 // Modal visibility states
@@ -63,6 +64,13 @@ const handleLogout = async () => {
             <v-card class="profile-card pa-5">
               <h1 class="text-h4 mb-4">Profile Settings</h1>
               <v-list dense>
+                <v-list-item @click="showModal('myProfile')">
+                  <v-list-item-icon>
+                    <v-icon>mdi-account</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>My Profile</v-list-item-title>
+                </v-list-item>
+
                 <v-list-item @click="showModal('myOrders')">
                   <v-list-item-icon>
                     <v-icon>mdi-package-variant</v-icon>
@@ -116,6 +124,26 @@ const handleLogout = async () => {
         </v-row>
 
         <!-- Modals -->
+
+        <!-- My profile Modal -->
+        <v-dialog v-model="modals.myProfile" max-width="600">
+                  <v-card>
+                    <v-toolbar flat>
+                      <v-toolbar-title>My Profile</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                      <v-btn icon @click="closeModal('myProfile')">
+                        <v-icon>mdi-close</v-icon>
+                      </v-btn>
+                    </v-toolbar>
+                    <v-card-text>
+                      <!-- My Profile content goes here. -->
+                      <UserProfile></UserProfile>
+
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+
+
         <!-- My Orders Modal -->
         <v-dialog v-model="modals.myOrders" max-width="600">
           <v-card>
