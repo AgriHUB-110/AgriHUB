@@ -73,7 +73,7 @@ onMounted(() => {
       <v-row class="d-flex justify-center glass-card1">
         <v-col cols="12" md="8">
           <v-img
-            src="/public/images/Phase3.gif"
+            src="/images/Phase3.gif"
             height="375"
             class="my-5"
           ></v-img>
@@ -81,7 +81,7 @@ onMounted(() => {
         <v-col cols="12" md="4" class="mx-auto">
           <v-card-title>
             <v-img
-              src="/public/images/logo.jpg"
+              src="/images/logo.jpg"
               height="100"
               class="my-2"
               alt="Logo"
