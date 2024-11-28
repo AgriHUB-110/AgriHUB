@@ -8,7 +8,6 @@ import {
 import { useRouter } from 'vue-router'
 import productList from '@/components/common/productList.vue'
 
-
 useHomeView() // Initialize the setup
 const router = useRouter()
 </script>
@@ -22,38 +21,17 @@ const router = useRouter()
 
 <template>
   <v-app>
-
     <v-main class="main-background">
       <div>
         <v-toolbar color="light-green-lighten-2">
           <v-toolbar-title>AgriHUB</v-toolbar-title>
-        <v-btn><h5>About</h5></v-btn>
-        <v-btn><h5>Projects</h5></v-btn>
-        <v-btn><h5>Insights</h5></v-btn>
-        <v-btn><h5>Locations</h5></v-btn>
-        <v-btn :to="{ path: '/profile' }"><h5>Profile</h5></v-btn>
-        <v-spacer></v-spacer>
+          <v-btn><h5>About</h5></v-btn>
+          <v-btn><h5>Projects</h5></v-btn>
+          <v-btn><h5>Insights</h5></v-btn>
+          <v-btn><h5>Locations</h5></v-btn>
+          <v-btn :to="{ path: '/profile' }"><h5>Profile</h5></v-btn>
+          <v-spacer></v-spacer>
 
-        <v-btn
-          v-if="!isLoggedIn"
-          variant="outlined"
-          class="rounded bg-white mr-5"
-          :to="{ path: '/login' }"
-        >
-          Sign in
-        </v-btn>
-        <v-btn
-          v-if="!isLoggedIn"
-          variant="outlined"
-          class="rounded mr-5"
-          :to="{ path: '/register' }"
-        >
-          Sign up
-        </v-btn>
-        <v-btn v-if="isLoggedIn" icon @click="onLogout">
-          <v-icon>mdi-export</v-icon>
-        </v-btn>
-      </v-toolbar>
           <v-btn
             v-if="!isLoggedIn"
             variant="outlined"
@@ -62,7 +40,6 @@ const router = useRouter()
           >
             Sign in
           </v-btn>
-
           <v-btn
             v-if="!isLoggedIn"
             variant="outlined"
