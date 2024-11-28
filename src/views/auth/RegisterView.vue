@@ -116,7 +116,11 @@ const checkSession = async () => {
         <!-- ! 1 col -->
         <v-col cols="12" md="10" class="mx-auto glass-card">
           <v-card-title>
-            <v-img src="/images/logo.jpg" height="200" class="my-2"></v-img>
+            <v-img
+              src="/images/logo.jpg"
+              height="100"
+              class="my-2"
+            ></v-img>
             <h2 class="my-3 text-center">AgriHub</h2>
           </v-card-title>
           <h2 class="my-2 text-center"><b>Registration Form</b></h2>

@@ -8,6 +8,7 @@ import {
 import { useRouter } from 'vue-router'
 import productList from '@/components/common/productList.vue'
 
+
 useHomeView() // Initialize the setup
 const router = useRouter()
 </script>
@@ -21,9 +22,11 @@ const router = useRouter()
 
 <template>
   <v-app>
-    <v-main>
-      <v-toolbar color="light-green-lighten-2">
-        <v-toolbar-title>AgriHUB</v-toolbar-title>
+
+    <v-main class="main-background">
+      <div>
+        <v-toolbar color="light-green-lighten-2">
+          <v-toolbar-title>AgriHUB</v-toolbar-title>
         <v-btn><h5>About</h5></v-btn>
         <v-btn><h5>Projects</h5></v-btn>
         <v-btn><h5>Insights</h5></v-btn>
@@ -51,13 +54,33 @@ const router = useRouter()
           <v-icon>mdi-export</v-icon>
         </v-btn>
       </v-toolbar>
+          <v-btn
+            v-if="!isLoggedIn"
+            variant="outlined"
+            class="rounded bg-white mr-5"
+            :to="{ path: '/login' }"
+          >
+            Sign in
+          </v-btn>
 
-      <v-container fluid class="bg-light-green-lighten-2">
+          <v-btn
+            v-if="!isLoggedIn"
+            variant="outlined"
+            class="rounded mr-5"
+            :to="{ path: '/register' }"
+          >
+            Sign up
+          </v-btn>
+          <v-btn v-if="isLoggedIn" icon @click="onLogout">
+            <v-icon>mdi-export</v-icon>
+          </v-btn>
+        </v-toolbar>
+      </div>
+      <v-container fluid>
         <v-row class="d-flex justify-center">
-          <v-divider :thickness="2"></v-divider>
           <v-col cols="12" md="8" class="text-center">
             <v-text-field
-              class="mb-5 pb-5 mt-5"
+              class="mb-2 pb-2 mt-2"
               v-model="search"
               label="Search for files, plugins, and creators"
               prepend-inner-icon="mdi-magnify"
@@ -65,23 +88,28 @@ const router = useRouter()
               hide-details
               single-line
             ></v-text-field>
-
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container fluid>
+        <v-row class="d-flex justify-center">
+          <v-col cols="12" md="8" class="text-center">
             <!-- !! items area -->
-            <!-- <v-row>
-              <v-col cols="4">
+            <v-row>
+              <v-col cols="3"> </v-col>
+              <v-col cols="3">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="3">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="3">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
-            </v-row> -->
-
-<productList></productList>
-
-            <v-card class="pa-5">
+            </v-row>
+            <br /><br />
+            <productList></productList>
+            <v-card class="pa-5 glass-card">
               <h1 class="text-h3 mb-3">Welcome to Our Site!</h1>
               <p class="mb-3">Logged in as: {{ userEmail }}</p>
               <p class="mb-5">
@@ -122,6 +150,7 @@ const router = useRouter()
           </v-col>
         </v-row>
       </v-container>
+      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </v-main>
   </v-app>
 </template>
