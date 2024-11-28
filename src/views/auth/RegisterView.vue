@@ -8,7 +8,7 @@ import {
   emailValidator,
   passwordValidator,
   confirmedValidator,
- phoneNumberValidator,
+  phoneNumberValidator,
 } from '@/utils/validator'
 import { supabase, formActionDefault } from '@/utils/supabase.js'
 import notif from '@/components/common/notif.vue'
@@ -62,27 +62,25 @@ const onRegister = async () => {
   }
 
   // Then, insert the user data into your User table
-  const { error: userError } = await supabase
-    .from('User')
-    .insert([
-      {
-        user_id: authData.user.id, // FK to auth.users
-        first_name: formData.value.first_name,
-        last_name: formData.value.last_name,
-        user_type: formData.value.user_type,
-        address: formData.value.address,
-        country: formData.value.country,
-        zip_code: formData.value.zip_code,
-        city: formData.value.city,
-        state: formData.value.state,
-        email: formData.value.email,
-        phone: formData.value.phone
-      }
-    ])
+  const { error: userError } = await supabase.from('User').insert([
+    {
+      user_id: authData.user.id, // FK to auth.users
+      first_name: formData.value.first_name,
+      last_name: formData.value.last_name,
+      user_type: formData.value.user_type,
+      address: formData.value.address,
+      country: formData.value.country,
+      zip_code: formData.value.zip_code,
+      city: formData.value.city,
+      state: formData.value.state,
+      email: formData.value.email,
+      phone: formData.value.phone,
+    },
+  ])
 
   if (userError) {
     console.log(userError)
-    formAction.value.formErrorMessage = "Error creating user profile"
+    formAction.value.formErrorMessage = 'Error creating user profile'
     formAction.value.formStatus = userError.status
   } else {
     formAction.value.formSuccessMessage = 'Successfully Registered :)'
@@ -158,13 +156,15 @@ const checkSession = async () => {
                   :rules="[requiredValidator]"
                 ></v-text-field>
                 <!-- !! usertype -->
-                <v-text-field
+                <v-radio-group
                   v-model="formData.user_type"
-                  label="User Type"
-                  variant="outlined"
-                  class="mt-3"
                   :rules="[requiredValidator]"
-                ></v-text-field>
+                  label="User Type"
+                  class="mt-3"
+                >
+                  <v-radio label="Buyer" value="Buyer"></v-radio>
+                  <v-radio label="Seller" value="Seller"></v-radio>
+                </v-radio-group>
 
                 <!-- !! address -->
                 <v-text-field
@@ -269,7 +269,8 @@ const checkSession = async () => {
               type="submit"
               :disabled="formAction.formProcess"
               :loading="formAction.formProcess"
-            ><span class="mdi mdi-account-plus"><b>Register</b></span></v-btn>
+              ><span class="mdi mdi-account-plus"><b>Register</b></span></v-btn
+            >
             <p class="text-center mt-3">Forgot Password?</p>
 
             <p class="text-center">
