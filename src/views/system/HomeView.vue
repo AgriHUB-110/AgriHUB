@@ -1,5 +1,10 @@
 <script setup>
-import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js' // Importing the functions
+import {
+  useHomeView,
+  userEmail,
+  isLoggedIn,
+  onLogout,
+} from '@/utils/HomeView.js' // Importing the functions
 
 useHomeView() // Initialize the setup
 </script>
@@ -13,7 +18,7 @@ useHomeView() // Initialize the setup
 
 <template>
   <v-app>
-    <v-main>
+    <v-main class="main-background">
       <div>
         <v-toolbar color="light-green-lighten-2">
           <v-toolbar-title>AgriHUB</v-toolbar-title>
@@ -54,12 +59,11 @@ useHomeView() // Initialize the setup
           </v-btn>
         </v-toolbar>
       </div>
-      <v-container fluid class="bg-light-green-lighten-2">
+      <v-container fluid class="">
         <v-row class="d-flex justify-center">
-          <v-divider :thickness="2"></v-divider>
           <v-col cols="12" md="8" class="text-center">
             <v-text-field
-              class="mb-5 pb-5 mt-5"
+              class="mb-2 pb-2 mt-2"
               v-model="search"
               label="Search for files, plugins, and creators"
               prepend-inner-icon="mdi-magnify"
@@ -67,21 +71,27 @@ useHomeView() // Initialize the setup
               hide-details
               single-line
             ></v-text-field>
-
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-container fluid>
+        <v-row class="d-flex justify-center">
+          <v-col cols="12" md="8" class="text-center">
             <!-- !! items area -->
             <v-row>
-              <v-col cols="4">
+              <v-col cols="3"> </v-col>
+              <v-col cols="3">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="3">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
-              <v-col cols="4">
+              <v-col cols="3">
                 <v-card text="Image here" variant="outlined"></v-card>
               </v-col>
             </v-row>
-
-            <v-card class="pa-5">
+            <br /><br />
+            <v-card class="pa-5 glass-card">
               <h1 class="text-h3 mb-3">Welcome to Our Site!</h1>
               <p class="mb-3">Logged in as: {{ userEmail }}</p>
               <p class="mb-5">
@@ -102,6 +112,7 @@ useHomeView() // Initialize the setup
           </v-col>
         </v-row>
       </v-container>
+      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </v-main>
   </v-app>
 </template>

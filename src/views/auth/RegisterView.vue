@@ -120,7 +120,7 @@ const checkSession = async () => {
           <v-card-title>
             <v-img
               src="/public/images/logo.jpg"
-              height="200"
+              height="100"
               class="my-2"
             ></v-img>
             <h2 class="my-3 text-center">AgriHub</h2>

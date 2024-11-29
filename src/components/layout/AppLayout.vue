@@ -25,7 +25,7 @@ function onClick() {
       </v-app-bar>
 
       <v-main class="main-background">
-        <v-container >
+        <v-container fluid>
           <slot name="content"></slot>
         </v-container>
       </v-main>
