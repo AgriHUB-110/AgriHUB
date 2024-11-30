@@ -214,6 +214,13 @@ const handleLogout = async () => {
               <v-text-field label="Price"></v-text-field>
               <v-text-field label="Category"></v-text-field>
               <v-text-field label="Stock"></v-text-field>
+              <v-file-input
+                label="Upload Photo"
+                accept="image/*"
+                prepend-icon="mdi-camera"
+                @change="uploadPhoto"
+                required
+              ></v-file-input>
               <v-btn type="submit">Save</v-btn>
             </v-card-text>
           </v-card>
