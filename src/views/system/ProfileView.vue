@@ -15,15 +15,17 @@ const modals = ref({
   orderTracking: false,
   wishlist: false,
   buyProducts: false,
-  sellProducts: false
+  sellProducts: false,
+  addProduct: false,
+  myProducts: false,
 })
 
-const showModal = (modal) => {
+const showModal = modal => {
   console.log(`Opening modal: ${modal}`)
   modals.value[modal] = true
 }
 
-const closeModal = (modal) => {
+const closeModal = modal => {
   modals.value[modal] = false
 }
 
@@ -64,6 +66,7 @@ const handleLogout = async () => {
             <v-card class="profile-card pa-5">
               <h1 class="text-h4 mb-4">Profile Settings</h1>
               <v-list dense>
+                <!-- My profile -->
                 <v-list-item @click="showModal('myProfile')">
                   <v-list-item-icon>
                     <v-icon>mdi-account</v-icon>
@@ -71,42 +74,66 @@ const handleLogout = async () => {
                   <v-list-item-title>My Profile</v-list-item-title>
                 </v-list-item>
 
+                <!-- My orders -->
                 <v-list-item @click="showModal('myOrders')">
                   <v-list-item-icon>
                     <v-icon>mdi-package-variant</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>My Orders</v-list-item-title>
                 </v-list-item>
+                <!-- Buy products -->
                 <v-list-item @click="showModal('buyProducts')">
                   <v-list-item-icon>
                     <v-icon>mdi-cart-plus</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Buy Products</v-list-item-title>
                 </v-list-item>
+
+                <!-- Add products -->
+                <v-list-item @click="showModal('addProduct')">
+                  <v-list-item-icon>
+                    <v-icon class="mdi mdi-archive-plus-outline"></v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>Add Products</v-list-item-title>
+                </v-list-item>
+
+                <!-- My products -->
+                <v-list-item @click="showModal('myProducts')">
+                  <v-list-item-icon>
+                    <v-icon class="mdi mdi-package"></v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>My Products</v-list-item-title>
+                </v-list-item>
+
+                <!-- Sell products -->
                 <v-list-item @click="showModal('sellProducts')">
                   <v-list-item-icon>
                     <v-icon>mdi-cash</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Sell Products</v-list-item-title>
                 </v-list-item>
+                <!-- My subscriptions -->
                 <v-list-item @click="showModal('mySubscriptions')">
                   <v-list-item-icon>
                     <v-icon>mdi-receipt</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>My Subscription</v-list-item-title>
                 </v-list-item>
+                <!-- Payment Method -->
                 <v-list-item @click="showModal('paymentMethod')">
                   <v-list-item-icon>
                     <v-icon>mdi-credit-card</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Payment Method</v-list-item-title>
                 </v-list-item>
+                <!-- Oder tracking -->
                 <v-list-item @click="showModal('orderTracking')">
                   <v-list-item-icon>
                     <v-icon>mdi-truck-delivery</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Order Tracking</v-list-item-title>
                 </v-list-item>
+                <!-- Wishlist -->
                 <v-list-item @click="showModal('wishlist')">
                   <v-list-item-icon>
                     <v-icon>mdi-heart</v-icon>
@@ -127,22 +154,20 @@ const handleLogout = async () => {
 
         <!-- My profile Modal -->
         <v-dialog v-model="modals.myProfile" max-width="600">
-                  <v-card>
-                    <v-toolbar flat>
-                      <v-toolbar-title>My Profile</v-toolbar-title>
-                      <v-spacer></v-spacer>
-                      <v-btn icon @click="closeModal('myProfile')">
-                        <v-icon>mdi-close</v-icon>
-                      </v-btn>
-                    </v-toolbar>
-                    <v-card-text>
-                      <!-- My Profile content goes here. -->
-                      <UserProfile></UserProfile>
-
-                    </v-card-text>
-                  </v-card>
-                </v-dialog>
-
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>My Profile</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('myProfile')">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text>
+              <!-- My Profile content goes here. -->
+              <UserProfile></UserProfile>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
 
         <!-- My Orders Modal -->
         <v-dialog v-model="modals.myOrders" max-width="600">
@@ -154,9 +179,7 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              My Orders content goes here.
-            </v-card-text>
+            <v-card-text> My Orders content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -170,9 +193,43 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
+            <v-card-text> Buy Products content goes here. </v-card-text>
+          </v-card>
+        </v-dialog>
+
+        <!-- Add Product Modal -->
+        <v-dialog v-model="modals.addProduct" max-width="600">
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>Add Products</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('addProduct')">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
             <v-card-text>
-              Buy Products content goes here.
+              Add Products content goes here.
+              <v-text-field label="Name"></v-text-field>
+              <v-text-field label="Description"></v-text-field>
+              <v-text-field label="Price"></v-text-field>
+              <v-text-field label="Category"></v-text-field>
+              <v-text-field label="Stock"></v-text-field>
+              <v-btn type="submit">Save</v-btn>
             </v-card-text>
+          </v-card>
+        </v-dialog>
+
+        <!-- My  products  -->
+        <v-dialog v-model="modals.myProducts" max-width="600">
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>My Products</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('myProducts')">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text> Buy Products content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -186,9 +243,7 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              Sell Products content goes here.
-            </v-card-text>
+            <v-card-text> Sell Products content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -202,9 +257,7 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              My Subscriptions content goes here.
-            </v-card-text>
+            <v-card-text> My Subscriptions content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -218,9 +271,7 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              Payment Method content goes here.
-            </v-card-text>
+            <v-card-text> Payment Method content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -234,9 +285,7 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              Order Tracking content goes here.
-            </v-card-text>
+            <v-card-text> Order Tracking content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -250,9 +299,7 @@ const handleLogout = async () => {
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              Wishlist content goes here.
-            </v-card-text>
+            <v-card-text> Wishlist content goes here. </v-card-text>
           </v-card>
         </v-dialog>
       </v-container>
