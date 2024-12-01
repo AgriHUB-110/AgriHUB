@@ -6,7 +6,7 @@ import {
   onLogout,
 } from '@/utils/HomeView.js' // Importing the functions
 import { useRouter } from 'vue-router'
-import ProductList from '@/components/common/ProductList.vue'
+import productList from '@/components/common/productList.vue'
 
 useHomeView() // Initialize the setup
 const router = useRouter()
