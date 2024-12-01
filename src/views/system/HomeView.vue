@@ -24,12 +24,30 @@ const router = useRouter()
     <v-main class="main-background">
       <div>
         <v-toolbar color="light-green-lighten-2">
-          <v-toolbar-title>AgriHUB</v-toolbar-title>
-          <v-btn><h5>About</h5></v-btn>
-          <v-btn><h5>Projects</h5></v-btn>
-          <v-btn><h5>Insights</h5></v-btn>
-          <v-btn><h5>Locations</h5></v-btn>
-          <v-btn :to="{ path: '/profile' }"><h5>Profile</h5></v-btn>
+          <v-toolbar-title>
+            <v-icon>mdi-leaf</v-icon>
+            AgriHUB
+          </v-toolbar-title>
+          <v-btn>
+            <v-icon left>mdi-information-outline</v-icon>
+            <h5>About</h5>
+          </v-btn>
+          <v-btn>
+            <v-icon left>mdi-file-outline</v-icon>
+            <h5>Projects</h5>
+          </v-btn>
+          <v-btn>
+            <v-icon left>mdi-lightbulb-outline</v-icon>
+            <h5>Insights</h5>
+          </v-btn>
+          <v-btn>
+            <v-icon left>mdi-map-marker-outline</v-icon>
+            <h5>Locations</h5>
+          </v-btn>
+          <v-btn :to="{ path: '/profile' }">
+            <v-icon left>mdi-account-outline</v-icon>
+            <h5>Profile</h5>
+          </v-btn>
           <v-spacer></v-spacer>
 
           <v-btn
@@ -53,6 +71,7 @@ const router = useRouter()
           </v-btn>
         </v-toolbar>
       </div>
+
       <v-container fluid>
         <v-row class="d-flex justify-center">
           <v-col cols="12" md="8" class="text-center">
@@ -68,24 +87,12 @@ const router = useRouter()
           </v-col>
         </v-row>
       </v-container>
+
       <v-container fluid>
         <v-row class="d-flex justify-center">
           <v-col cols="12" md="8" class="text-center">
             <!-- !! items area -->
-            <v-row>
-              <v-col cols="3"> </v-col>
-              <v-col cols="3">
-                <v-card text="Image here" variant="outlined"></v-card>
-              </v-col>
-              <v-col cols="3">
-                <v-card text="Image here" variant="outlined"></v-card>
-              </v-col>
-              <v-col cols="3">
-                <v-card text="Image here" variant="outlined"></v-card>
-              </v-col>
-            </v-row>
-            <br /><br />
-            <productList></productList>
+            <ProductList></ProductList>
             <v-card class="pa-5 glass-card">
               <h1 class="text-h3 mb-3">Welcome to Our Site!</h1>
               <p class="mb-3">Logged in as: {{ userEmail }}</p>
@@ -101,32 +108,16 @@ const router = useRouter()
                 color="error"
                 class="ma-4"
                 @click="onLogout"
-                >Logout</v-btn
               >
+                Logout
+              </v-btn>
             </v-card>
 
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
+            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
           </v-col>
         </v-row>
       </v-container>
+
       <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </v-main>
   </v-app>
