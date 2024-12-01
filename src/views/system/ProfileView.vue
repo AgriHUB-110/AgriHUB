@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout is properly implemented
 import headerAH from '@/components/common/headerAH.vue'
-import UserProfile from '@/components/common/userProfile.vue';
-
+import UserProfile from '@/components/common/userProfile.vue'
+import {requiredValidator, integerValidator} from '@/utils/validator.js'
 const router = useRouter()
 
 // Modal visibility states
@@ -209,18 +209,24 @@ const handleLogout = async () => {
             </v-toolbar>
             <v-card-text>
               Add Products content goes here.
-              <v-text-field label="Name"></v-text-field>
-              <v-text-field label="Description"></v-text-field>
-              <v-text-field label="Price"></v-text-field>
-              <v-text-field label="Category"></v-text-field>
-              <v-text-field label="Stock"></v-text-field>
-              <v-file-input
+              <v-text-field label="Name"
+              :rules="[requiredValidator]"></v-text-field>
+              <v-text-field label="Description"
+              :rules="[requiredValidator]"></v-text-field>
+              <v-text-field label="Price"
+              :rules="[requiredValidator,integerValidator]"></v-text-field>
+              <v-text-field label="Category"
+              :rules="[requiredValidator]"></v-text-field>
+              <v-text-field label="Stock"
+              :rules="[requiredValidator,integerValidator]"></v-text-field>
+              <!-- !! cant do this yet -->
+              <!-- <v-file-input
                 label="Upload Photo"
                 accept="image/*"
                 prepend-icon="mdi-camera"
                 @change="uploadPhoto"
                 required
-              ></v-file-input>
+              ></v-file-input> -->
               <v-btn type="submit">Save</v-btn>
             </v-card-text>
           </v-card>
