@@ -263,17 +263,51 @@ const handleLogout = async () => {
 
         <!-- Payment Method Modal -->
         <v-dialog v-model="modals.paymentMethod" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Payment Method</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('paymentMethod')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Payment Method content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+  <v-card class="elevation-10">
+    <v-toolbar flat color="blue-grey lighten-4">
+      <v-toolbar-title>Payment Method</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="closeModal('paymentMethod')">
+        <v-icon>mdi-arrow-left-circle</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <v-card-text class="pa-4">
+      <v-row>
+        <!-- Debit/Credit Card Option -->
+        <v-col cols="12" md="6">
+          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('Debit/Credit Card')">
+            <v-icon left>mdi-credit-card</v-icon>
+            Debit/Credit Card
+          </v-btn>
+        </v-col>
+        
+        <!-- GCash Option -->
+        <v-col cols="12" md="6">
+          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('GCash')">
+            <v-icon left>mdi-phone-check</v-icon>
+            GCash
+          </v-btn>
+        </v-col>
+
+        <!-- Bank Transfer Option -->
+        <v-col cols="12" md="6">
+          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('Bank Transfer')">
+            <v-icon left>mdi-bank</v-icon>
+            Bank Transfer
+          </v-btn>
+        </v-col>
+
+        <!-- Cash on Delivery Option -->
+        <v-col cols="12" md="6">
+          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('Cash on Delivery')">
+            <v-icon left>mdi-cash</v-icon>
+            Cash on Delivery
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </v-card>
+</v-dialog>
 
         <!-- Order Tracking Modal -->
         <v-dialog v-model="modals.orderTracking" max-width="600">
