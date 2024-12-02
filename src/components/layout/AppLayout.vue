@@ -28,6 +28,8 @@ function onClick() {
         <v-container fluid>
           <slot name="content"></slot>
         </v-container>
+      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
+
       </v-main>
     </v-app>
   </v-responsive>
