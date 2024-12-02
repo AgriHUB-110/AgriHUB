@@ -281,7 +281,6 @@ const checkSession = async () => {
         </v-col>
       </v-row>
       <br /><br />
-      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </template>
   </AppLayout>
 </template>
