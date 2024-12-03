@@ -92,8 +92,8 @@ const router = useRouter()
         <v-row class="d-flex justify-center">
           <v-col cols="12" md="8" class="text-center">
             <!-- !! items area -->
-            <ProductList></ProductList>
-            <v-card class="pa-5 glass-card">
+            <productList></productList>
+            <!-- <v-card class="pa-5 glass-card">
               <h1 class="text-h3 mb-3">Welcome to Our Site!</h1>
               <p class="mb-3">Logged in as: {{ userEmail }}</p>
               <p class="mb-5">
@@ -111,7 +111,7 @@ const router = useRouter()
               >
                 Logout
               </v-btn>
-            </v-card>
+            </v-card> -->
 
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
           </v-col>
