@@ -4,7 +4,10 @@ import { useRouter } from 'vue-router'
 import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout is properly implemented
 import headerAH from '@/components/common/headerAH.vue'
 import UserProfile from '@/components/common/userProfile.vue'
-import {requiredValidator, integerValidator} from '@/utils/validator.js'
+import { requiredValidator, integerValidator } from '@/utils/validator.js'
+import { supabase, formActionDefault } from '@/utils/supabase.js'
+import notif from '@/components/common/notif.vue'
+
 const router = useRouter()
 
 // Modal visibility states
@@ -37,7 +40,103 @@ const handleLogout = async () => {
     console.error('Logout failed:', error)
   }
 }
+
+// Reactive references for form data
+const formData = ref({
+  name: '',
+  description: '',
+  price: '',
+  category: '',
+  stock: '',
+})
+const formAction = ref({ ...formActionDefault })
+
+// Retrieve user table ID
+const getCurrentUserId = async () => {
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser()
+
+    if (authError) {
+      console.error('Error retrieving authenticated user:', authError.message)
+      return null
+    }
+
+    const authUserId = authData?.user?.id
+    if (!authUserId) {
+      console.warn('No authenticated user found.')
+      return null
+    }
+
+    // Query the User table for the corresponding user ID
+    const { data: userData, error: userError } = await supabase
+      .from('User')
+      .select('id') // Select the primary key (user table ID)
+      .eq('user_id', authUserId) // Match the foreign key
+      .single() // Fetch a single row
+
+    if (userError) {
+      console.error('Error retrieving user table ID:', userError.message)
+      return null
+    }
+    console.log('User Table ID:', userData.id)
+    return userData.id // Return the user table ID
+  } catch (err) {
+    console.error('Unexpected error:', err)
+    return null
+  }
+}
+
+// Function to handle form submission
+const submitProduct = async () => {
+  formAction.value = { ...formActionDefault }
+  formAction.value.formProcess = true
+
+  const userId = await getCurrentUserId()
+  if (!userId) {
+    formAction.value.formErrorMessage = 'User not logged in.'
+    formAction.value.formProcess = false
+    return
+  }
+
+  // Get the current date and time
+  const dateAdded = new Date().toISOString()
+
+  // Insert data into Supabase Product table
+  const { error } = await supabase.from('Product').insert([
+    {
+      name: formData.value.name,
+      description: formData.value.description,
+      price: formData.value.price,
+      category: formData.value.category,
+      stock: formData.value.stock,
+      date_added: dateAdded, // Set the date_added field
+      seller_id: userId, // Manually set the seller_id
+    },
+  ])
+
+  // Handle response
+  if (error) {
+    formAction.value.formErrorMessage = error.message
+    formAction.value.formStatus = error.status
+  } else {
+    formAction.value.formSuccessMessage = 'Product added successfully!'
+    resetForm()
+  }
+  formAction.value.formProcess = false
+}
+
+// Function to reset the form
+const resetForm = () => {
+  formData.value = {
+    name: '',
+    description: '',
+    price: '',
+    category: '',
+    stock: '',
+  }
+}
 </script>
+
 
 <style scoped>
 .profile-card {
@@ -209,25 +308,41 @@ const handleLogout = async () => {
             </v-toolbar>
             <v-card-text>
               Add Products content goes here.
-              <v-text-field label="Name"
-              :rules="[requiredValidator]"></v-text-field>
-              <v-text-field label="Description"
-              :rules="[requiredValidator]"></v-text-field>
-              <v-text-field label="Price"
-              :rules="[requiredValidator,integerValidator]"></v-text-field>
-              <v-text-field label="Category"
-              :rules="[requiredValidator]"></v-text-field>
-              <v-text-field label="Stock"
-              :rules="[requiredValidator,integerValidator]"></v-text-field>
-              <!-- !! cant do this yet -->
-              <!-- <v-file-input
-                label="Upload Photo"
-                accept="image/*"
-                prepend-icon="mdi-camera"
-                @change="uploadPhoto"
-                required
-              ></v-file-input> -->
-              <v-btn type="submit">Save</v-btn>
+              <notif
+            :form-success-message="formAction.formSuccessMessage"
+            :form-error-message="formAction.formErrorMessage"
+          ></notif>
+              <v-form @submit.prevent="submitProduct">
+                <v-text-field
+                  label="Name"
+                  v-model="formData.name"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Description"
+                  v-model="formData.description"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Price"
+                  v-model="formData.price"
+                  :rules="[requiredValidator, integerValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Category"
+                  v-model="formData.category"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Stock"
+                  type="number"
+                  v-model="formData.stock"
+                  :rules="[requiredValidator, integerValidator]"
+                ></v-text-field>
+                <v-btn type="submit"
+                class="mt-3"
+                >Save</v-btn>
+              </v-form>
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -276,51 +391,71 @@ const handleLogout = async () => {
 
         <!-- Payment Method Modal -->
         <v-dialog v-model="modals.paymentMethod" max-width="600">
-  <v-card class="elevation-10">
-    <v-toolbar flat color="blue-grey lighten-4">
-      <v-toolbar-title>Payment Method</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon @click="closeModal('paymentMethod')">
-        <v-icon>mdi-arrow-left-circle</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <v-card-text class="pa-4">
-      <v-row>
-        <!-- Debit/Credit Card Option -->
-        <v-col cols="12" md="6">
-          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('Debit/Credit Card')">
-            <v-icon left>mdi-credit-card</v-icon>
-            Debit/Credit Card
-          </v-btn>
-        </v-col>
-        
-        <!-- GCash Option -->
-        <v-col cols="12" md="6">
-          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('GCash')">
-            <v-icon left>mdi-phone-check</v-icon>
-            GCash
-          </v-btn>
-        </v-col>
+          <v-card class="elevation-10">
+            <v-toolbar flat color="blue-grey lighten-4">
+              <v-toolbar-title>Payment Method</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('paymentMethod')">
+                <v-icon>mdi-arrow-left-circle</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text class="pa-4">
+              <v-row>
+                <!-- Debit/Credit Card Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('Debit/Credit Card')"
+                  >
+                    <v-icon left>mdi-credit-card</v-icon>
+                    Debit/Credit Card
+                  </v-btn>
+                </v-col>
 
-        <!-- Bank Transfer Option -->
-        <v-col cols="12" md="6">
-          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('Bank Transfer')">
-            <v-icon left>mdi-bank</v-icon>
-            Bank Transfer
-          </v-btn>
-        </v-col>
+                <!-- GCash Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('GCash')"
+                  >
+                    <v-icon left>mdi-phone-check</v-icon>
+                    GCash
+                  </v-btn>
+                </v-col>
 
-        <!-- Cash on Delivery Option -->
-        <v-col cols="12" md="6">
-          <v-btn tile block color="blue-grey lighten-2" @click="selectPaymentMethod('Cash on Delivery')">
-            <v-icon left>mdi-cash</v-icon>
-            Cash on Delivery
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
-</v-dialog>
+                <!-- Bank Transfer Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('Bank Transfer')"
+                  >
+                    <v-icon left>mdi-bank</v-icon>
+                    Bank Transfer
+                  </v-btn>
+                </v-col>
+
+                <!-- Cash on Delivery Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('Cash on Delivery')"
+                  >
+                    <v-icon left>mdi-cash</v-icon>
+                    Cash on Delivery
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
 
         <!-- Order Tracking Modal -->
         <v-dialog v-model="modals.orderTracking" max-width="600">
