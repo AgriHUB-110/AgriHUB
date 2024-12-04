@@ -223,6 +223,7 @@ const checkSession = async () => {
                   label="Phone"
                   variant="outlined"
                   class="mt-3"
+                  type="phone"
                   :rules="[requiredValidator, phoneNumberValidator]"
                   prepend-inner-icon="mdi-phone"
                 ></v-text-field>
