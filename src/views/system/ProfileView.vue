@@ -13,7 +13,6 @@ const router = useRouter()
 // Modal visibility states
 const modals = ref({
   myOrders: false,
-  mySubscriptions: false,
   paymentMethod: false,
   orderTracking: false,
   wishlist: false,
@@ -111,6 +110,7 @@ const submitProduct = async () => {
       stock: formData.value.stock,
       date_added: dateAdded, // Set the date_added field
       seller_id: userId, // Manually set the seller_id
+      image_path: imagePath, // Set the image_path field
     },
   ])
 
@@ -136,7 +136,6 @@ const resetForm = () => {
   }
 }
 </script>
-
 
 <style scoped>
 .profile-card {
@@ -211,13 +210,7 @@ const resetForm = () => {
                   </v-list-item-icon>
                   <v-list-item-title>Sell Products</v-list-item-title>
                 </v-list-item>
-                <!-- My subscriptions -->
-                <v-list-item @click="showModal('mySubscriptions')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-receipt</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>My Subscription</v-list-item-title>
-                </v-list-item>
+
                 <!-- Payment Method -->
                 <v-list-item @click="showModal('paymentMethod')">
                   <v-list-item-icon>
@@ -233,12 +226,13 @@ const resetForm = () => {
                   <v-list-item-title>Order Tracking</v-list-item-title>
                 </v-list-item>
                 <!-- Wishlist -->
-                <v-list-item @click="showModal('wishlist')">
+                <!-- ! add in the future... -->
+                <!-- <v-list-item @click="showModal('wishlist')">
                   <v-list-item-icon>
                     <v-icon>mdi-heart</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Wishlist</v-list-item-title>
-                </v-list-item>
+                </v-list-item> -->
               </v-list>
 
               <!-- Logout Button -->
@@ -309,9 +303,9 @@ const resetForm = () => {
             <v-card-text>
               Add Products content goes here.
               <notif
-            :form-success-message="formAction.formSuccessMessage"
-            :form-error-message="formAction.formErrorMessage"
-          ></notif>
+                :form-success-message="formAction.formSuccessMessage"
+                :form-error-message="formAction.formErrorMessage"
+              ></notif>
               <v-form @submit.prevent="submitProduct">
                 <v-text-field
                   label="Name"
@@ -339,9 +333,15 @@ const resetForm = () => {
                   v-model="formData.stock"
                   :rules="[requiredValidator, integerValidator]"
                 ></v-text-field>
-                <v-btn type="submit"
-                class="mt-3"
-                >Save</v-btn>
+
+                <v-file-input
+                  v-model="formData.image"
+                  :rules="[requiredValidator]"
+                  accept="image/*"
+                >
+                  <v-btn color="primary">Choose File</v-btn>
+                </v-file-input>
+                <v-btn type="submit" class="mt-3">Save</v-btn>
               </v-form>
             </v-card-text>
           </v-card>
@@ -372,20 +372,6 @@ const resetForm = () => {
               </v-btn>
             </v-toolbar>
             <v-card-text> Sell Products content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
-
-        <!-- My Subscriptions Modal -->
-        <v-dialog v-model="modals.mySubscriptions" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>My Subscription</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('mySubscriptions')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> My Subscriptions content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
