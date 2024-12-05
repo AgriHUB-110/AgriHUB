@@ -1,143 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { modals, showModal, closeModal, handleLogout, formData, formAction, getCurrentUserId, submitProduct, resetForm } from '@/utils/ProfileView.js'
 import { useRouter } from 'vue-router'
-import { onLogout } from '@/utils/HomeView.js' // Ensure onLogout is properly implemented
 import headerAH from '@/components/common/headerAH.vue'
 import UserProfile from '@/components/common/userProfile.vue'
 import { requiredValidator, integerValidator } from '@/utils/validator.js'
-import { supabase, formActionDefault } from '@/utils/supabase.js'
 import notif from '@/components/common/notif.vue'
 
 const router = useRouter()
 
-// Modal visibility states
-const modals = ref({
-  myOrders: false,
-  paymentMethod: false,
-  orderTracking: false,
-  wishlist: false,
-  addProduct: false,
-  myProducts: false,
-})
-
-const showModal = modal => {
-  console.log(`Opening modal: ${modal}`)
-  modals.value[modal] = true
-}
-
-const closeModal = modal => {
-  modals.value[modal] = false
-}
-
-const handleLogout = async () => {
-  try {
-    await onLogout() // Call the logout function
-    router.push('/') // Redirect to HomeView.vue after logout
-  } catch (error) {
-    console.error('Logout failed:', error)
-  }
-}
-
-// Reactive references for form data
-const formData = ref({
-  name: '',
-  description: '',
-  price: '',
-  category: '',
-  stock: '',
-})
-const formAction = ref({ ...formActionDefault })
-
-// Retrieve user table ID
-const getCurrentUserId = async () => {
-  try {
-    const { data: authData, error: authError } = await supabase.auth.getUser()
-
-    if (authError) {
-      console.error('Error retrieving authenticated user:', authError.message)
-      return null
-    }
-
-    const authUserId = authData?.user?.id
-    if (!authUserId) {
-      console.warn('No authenticated user found.')
-      return null
-    }
-
-    // Query the User table for the corresponding user ID
-    const { data: userData, error: userError } = await supabase
-      .from('User')
-      .select('id') // Select the primary key (user table ID)
-      .eq('user_id', authUserId) // Match the foreign key
-      .single() // Fetch a single row
-
-    if (userError) {
-      console.error('Error retrieving user table ID:', userError.message)
-      return null
-    }
-    console.log('User Table ID:', userData.id)
-    return userData.id // Return the user table ID
-  } catch (err) {
-    console.error('Unexpected error:', err)
-    return null
-  }
-}
-
-// Function to handle form submission
-const submitProduct = async () => {
-  formAction.value = { ...formActionDefault }
-  formAction.value.formProcess = true
-
-  const userId = await getCurrentUserId()
-  if (!userId) {
-    formAction.value.formErrorMessage = 'User not logged in.'
-    formAction.value.formProcess = false
-    return
-  }
-
-  // Get the current date and time
-  const dateAdded = new Date().toISOString()
-
-  // Insert data into Supabase Product table
-  const { error } = await supabase.from('Product').insert([
-    {
-      name: formData.value.name,
-      description: formData.value.description,
-      price: formData.value.price,
-      category: formData.value.category,
-      stock: formData.value.stock,
-      date_added: dateAdded, // Set the date_added field
-      seller_id: userId, // Manually set the seller_id
-      image_path: imagePath, // Set the image_path field
-    },
-  ])
-
-  // Handle response
-  if (error) {
-    formAction.value.formErrorMessage = error.message
-    formAction.value.formStatus = error.status
-  } else {
-    formAction.value.formSuccessMessage = 'Product added successfully!'
-    resetForm()
-  }
-  formAction.value.formProcess = false
-}
-
-// Function to reset the form
-const resetForm = () => {
-  formData.value = {
-    name: '',
-    description: '',
-    price: '',
-    category: '',
-    stock: '',
-    image_path : null,
-  }
-}
+// If handleLogout function depends on router, it should be used inside the setup:
+const logout = () => handleLogout(router)
 
 </script>
-
-<style scoped>
+<style>
 .profile-card {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
@@ -306,13 +181,12 @@ const resetForm = () => {
                   :rules="[requiredValidator, integerValidator]"
                 ></v-text-field>
 
-                <v-file-input
+                <!-- <v-file-input
                   v-model="formData.image"
                   :rules="[requiredValidator]"
                   accept="image/*"
                 >
-                  <v-btn color="primary">Choose File</v-btn>
-                </v-file-input>
+                </v-file-input> -->
                 <v-btn type="submit" class="mt-3">Save</v-btn>
               </v-form>
             </v-card-text>
