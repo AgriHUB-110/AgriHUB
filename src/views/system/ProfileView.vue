@@ -16,8 +16,6 @@ const modals = ref({
   paymentMethod: false,
   orderTracking: false,
   wishlist: false,
-  buyProducts: false,
-  sellProducts: false,
   addProduct: false,
   myProducts: false,
 })
@@ -133,8 +131,10 @@ const resetForm = () => {
     price: '',
     category: '',
     stock: '',
+    image_path : null,
   }
 }
+
 </script>
 
 <style scoped>
@@ -179,20 +179,13 @@ const resetForm = () => {
                   </v-list-item-icon>
                   <v-list-item-title>My Orders</v-list-item-title>
                 </v-list-item>
-                <!-- Buy products -->
-                <v-list-item @click="showModal('buyProducts')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-cart-plus</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Buy Products</v-list-item-title>
-                </v-list-item>
 
                 <!-- Add products -->
                 <v-list-item @click="showModal('addProduct')">
                   <v-list-item-icon>
                     <v-icon class="mdi mdi-archive-plus-outline"></v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title>Add Products</v-list-item-title>
+                  <v-list-item-title>Add Products to Sell</v-list-item-title>
                 </v-list-item>
 
                 <!-- My products -->
@@ -203,13 +196,6 @@ const resetForm = () => {
                   <v-list-item-title>My Products</v-list-item-title>
                 </v-list-item>
 
-                <!-- Sell products -->
-                <v-list-item @click="showModal('sellProducts')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-cash</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Sell Products</v-list-item-title>
-                </v-list-item>
 
                 <!-- Payment Method -->
                 <v-list-item @click="showModal('paymentMethod')">
@@ -273,20 +259,6 @@ const resetForm = () => {
               </v-btn>
             </v-toolbar>
             <v-card-text> My Orders content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
-
-        <!-- Buy Products Modal -->
-        <v-dialog v-model="modals.buyProducts" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Buy Products</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('buyProducts')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Buy Products content goes here. </v-card-text>
           </v-card>
         </v-dialog>
 
@@ -361,19 +333,7 @@ const resetForm = () => {
           </v-card>
         </v-dialog>
 
-        <!-- Sell Products Modal -->
-        <v-dialog v-model="modals.sellProducts" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Sell Products</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('sellProducts')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Sell Products content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+
 
         <!-- Payment Method Modal -->
         <v-dialog v-model="modals.paymentMethod" max-width="600">
