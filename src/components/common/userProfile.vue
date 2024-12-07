@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { supabase } from '@/utils/supabase.js'
+import { ref, onMounted } from 'vue';
+import { supabase } from '@/utils/supabase.js';
+
 
 const user = ref(null)
 const isEditing = ref(false)
@@ -54,7 +55,9 @@ onMounted(() => {
 </style>
 
 <template>
-  <v-container>
+  <HeaderAH>
+    <template #responsive-nav>
+      <v-container>
     <v-card>
       <v-card-title>User Profile</v-card-title>
       <v-card-text v-if="user && !isEditing">
@@ -234,4 +237,7 @@ onMounted(() => {
       <v-card-text v-else> Loading... </v-card-text>
     </v-card>
   </v-container>
+    </template>
+  </HeaderAH>
+  
 </template>
