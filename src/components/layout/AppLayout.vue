@@ -12,6 +12,14 @@ function onClick() {
   <v-responsive class="border rounded">
     <v-app :theme="theme">
       <v-app-bar class="px-3" color="light-green-lighten-2">
+        <v-toolbar-title>
+          <router-link
+            class="text-decoration-none text-black"
+            :to="{ path: '/' }"
+          >
+             <v-icon>mdi-leaf</v-icon>AgriHUB</router-link
+          >
+        </v-toolbar-title>
         <v-spacer></v-spacer>
 
         <v-btn
@@ -28,6 +36,9 @@ function onClick() {
         <v-container fluid>
           <slot name="content"></slot>
         </v-container>
+        <v-footer border app color="light-green lighten-2"
+          >AgriHub2024</v-footer
+        >
       </v-main>
     </v-app>
   </v-responsive>
