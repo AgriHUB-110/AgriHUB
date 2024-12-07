@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/utils/supabase.js';
+import headerAH from './headerAH.vue';
 
 
 const user = ref(null);
@@ -55,7 +56,9 @@ onMounted(() => {
 </style>
 
 <template>
-  <v-container>
+  <HeaderAH>
+    <template #responsive-nav>
+      <v-container>
     <v-card>
       <v-card-title>User Profile</v-card-title>
       <v-card-text v-if="user && !isEditing">
@@ -227,4 +230,7 @@ onMounted(() => {
       </v-card-text>
     </v-card>
   </v-container>
+    </template>
+  </HeaderAH>
+  
 </template>

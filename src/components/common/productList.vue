@@ -52,7 +52,7 @@ onMounted(() => {
           <v-card-title>{{ product.name }}</v-card-title>
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
           <v-card-actions>
-            <v-btn color="primary">Details</v-btn>
+            <v-btn color="primary" :to="{ path: '/product' }">Details</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
