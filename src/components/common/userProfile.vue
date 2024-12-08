@@ -1,51 +1,50 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/utils/supabase.js';
-import headerAH from './headerAH.vue';
 
 
-const user = ref(null);
-const isEditing = ref(false);
-const formData = ref({});
+const user = ref(null)
+const isEditing = ref(false)
+const formData = ref({})
 
 async function fetchUserProfile() {
-  const { data: authData } = await supabase.auth.getSession();
-  const userId = authData.session.user.id;
+  const { data: authData } = await supabase.auth.getSession()
+  const userId = authData.session.user.id
 
   const { data, error } = await supabase
     .from('User')
     .select()
     .eq('user_id', userId)
-    .single();
+    .single()
 
   if (error) {
-    console.error('Error fetching user profile:', error);
+    console.error('Error fetching user profile:', error)
   } else {
-    user.value = data;
-    formData.value = { ...data };
+    user.value = data
+    formData.value = { ...data }
   }
 }
 
 async function updateUserProfile() {
-  const { data: authData } = await supabase.auth.getSession();
-  const userId = authData.session.user.id;
+  const { data: authData } = await supabase.auth.getSession()
+  const userId = authData.session.user.id
 
   const { error } = await supabase
     .from('User')
     .update(formData.value)
-    .eq('user_id', userId);
+    .eq('user_id', userId)
 
   if (error) {
-    console.error('Error updating user profile:', error);
+    console.error('Error updating user profile:', error)
   } else {
-    user.value = { ...formData.value };
-    isEditing.value = false;
+    user.value = { ...formData.value }
+    isEditing.value = false
   }
 }
 
 onMounted(() => {
-  fetchUserProfile();
-});
+  fetchUserProfile()
+})
 </script>
 
 <style scoped>
@@ -153,6 +152,16 @@ onMounted(() => {
             </v-list-item-content>
           </v-list-item>
         </v-list>
+        <!-- User type -->
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>
+              <v-icon left>mdi-account-group</v-icon>
+              User Type
+            </v-list-item-title>
+            <v-list-item-subtitle>{{ user.user_type }}</v-list-item-subtitle>
+          </v-list-item-content>
+          </v-list-item>
         <v-btn @click="isEditing = true">
           <v-icon left>mdi-pencil</v-icon>
           Edit
@@ -225,9 +234,7 @@ onMounted(() => {
           </v-btn>
         </v-form>
       </v-card-text>
-      <v-card-text v-else>
-        Loading...
-      </v-card-text>
+      <v-card-text v-else> Loading... </v-card-text>
     </v-card>
   </v-container>
     </template>
