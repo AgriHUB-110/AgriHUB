@@ -223,6 +223,7 @@ const checkSession = async () => {
                   label="Phone"
                   variant="outlined"
                   class="mt-3"
+                  type="phone"
                   :rules="[requiredValidator, phoneNumberValidator]"
                   prepend-inner-icon="mdi-phone"
                 ></v-text-field>
@@ -281,7 +282,6 @@ const checkSession = async () => {
         </v-col>
       </v-row>
       <br /><br />
-      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </template>
   </AppLayout>
 </template>
