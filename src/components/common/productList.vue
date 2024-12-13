@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { supabase } from '@/utils/supabase.js';
+import { ref, computed, watch, onMounted } from 'vue'
+import { supabase } from '@/utils/supabase.js'
 
-const products = ref([]); // Reactive array to store products
-const page = ref(1); // Current page
-const perPage = ref(9); // Products per page
-const total = ref(0); // Total products count
+const products = ref([]) // Reactive array to store products
+const page = ref(1) // Current page
+const perPage = ref(9) // Products per page
+const total = ref(0) // Total products count
 
 // Computed properties for pagination
-const totalPages = computed(() => Math.ceil(total.value / perPage.value));
-const start = computed(() => (page.value - 1) * perPage.value + 1);
-const end = computed(() => Math.min(page.value * perPage.value, total.value));
+const totalPages = computed(() => Math.ceil(total.value / perPage.value))
+const start = computed(() => (page.value - 1) * perPage.value + 1)
+const end = computed(() => Math.min(page.value * perPage.value, total.value))
 
 // Fetch products from the Supabase database
 const fetchProducts = async () => {
@@ -18,25 +18,29 @@ const fetchProducts = async () => {
     const { data, count, error } = await supabase
       .from('Product')
       .select('*', { count: 'exact' }) // Get products with count
-      .range((page.value - 1) * perPage.value, page.value * perPage.value - 1); // Range for pagination
+      .range((page.value - 1) * perPage.value, page.value * perPage.value - 1) // Range for pagination
 
     if (error) {
-      console.error('Error fetching products:', error.message);
-      return;
+      console.error('Error fetching products:', error.message)
+      return
     }
 
-    products.value = data || []; // Update products
-    total.value = count || 0; // Update total count
+    products.value = data || [] // Update products
+    total.value = count || 0 // Update total count
   } catch (err) {
-    console.error('Unexpected error:', err);
+    console.error('Unexpected error:', err)
   }
-};
+}
+
+// Watch for changes in the page number and fetch products
+watch(page, fetchProducts)
 
 // Fetch products when the component is mounted
 onMounted(() => {
-  fetchProducts();
-});
+  fetchProducts()
+})
 </script>
+
 <template>
   <v-container>
     <!-- Product Cards -->
@@ -60,14 +64,13 @@ onMounted(() => {
 
     <!-- Pagination -->
     <v-pagination
-      v-model="page"
-      :length="totalPages"
-      @input="fetchProducts"
+    v-model="page"
+    :length="totalPages"
     ></v-pagination>
 
     <!-- Pagination Details -->
     <div>
-      Showing {{ start }}-{{ end }} of {{ total }} results
+    Showing {{ start }}-{{ end }} of {{ total }} results
     </div>
 
     <!-- Navigation Buttons -->
@@ -75,14 +78,14 @@ onMounted(() => {
       <v-btn
         class = "mr-3"
         :disabled="page === 1"
-        @click="page > 1 && (page--, fetchProducts())"
+        @click="page > 1 && page--"
         color="secondary"
       >
         Previous
       </v-btn>
       <v-btn
         :disabled="page === totalPages"
-        @click="page < totalPages && (page++, fetchProducts())"
+        @click="page < totalPages && page++"
         color="secondary"
       >
         Next
