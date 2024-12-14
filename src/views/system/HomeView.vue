@@ -1,17 +1,13 @@
 <script setup>
-<<<<<<< HEAD
-import { useHomeView, userEmail, isLoggedIn, onLogout, } from '@/utils/HomeView.js'
-=======
 import {
   useHomeView,
   userEmail,
   isLoggedIn,
   onLogout,
 } from '@/utils/HomeView.js' // Importing the functions
->>>>>>> ac0b57573a0474a490b76cf4a206df46c656692d
 import { useRouter } from 'vue-router'
 import productList from '@/components/common/productList.vue'
-useHomeView()
+useHomeView() // Initialize the setup
 const router = useRouter()
 
 const goToLocation = () => {
@@ -21,46 +17,41 @@ const goToLocation = () => {
   )
 }
 </script>
+
+<style scoped>
+.v-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+}
+</style>
+
 <template>
   <v-app>
     <v-main class="main-background">
-      <v-container fluid>
+      <div>
         <v-toolbar color="light-green-lighten-2">
-<<<<<<< HEAD
-          <v-toolbar-title>
-            <v-icon>mdi-leaf</v-icon> AgriHUB
-          </v-toolbar-title>
-          <v-btn class="mx-2">
-=======
           <v-toolbar-title> <v-icon>mdi-leaf</v-icon> AgriHUB </v-toolbar-title>
           <v-btn>
->>>>>>> ac0b57573a0474a490b76cf4a206df46c656692d
             <v-icon left>mdi-information-outline</v-icon>
-            <span>About</span>
+            <h5>About</h5>
           </v-btn>
-          <v-btn class="mx-2">
+          <v-btn>
             <v-icon left>mdi-file-outline</v-icon>
-            <span>Projects</span>
+            <h5>Projects</h5>
           </v-btn>
-          <v-btn class="mx-2">
+          <v-btn>
             <v-icon left>mdi-lightbulb-outline</v-icon>
-            <span>Insights</span>
+            <h5>Insights</h5>
           </v-btn>
-          <v-btn @click="goToLocation" class="mx-2">
+          <v-btn @click="goToLocation">
             <v-icon left>mdi-map-marker-outline</v-icon>
-            <span>Locations</span>
+            <h5>Locations</h5>
           </v-btn>
-          <v-btn :to="{ path: '/profile' }" class="mx-2">
+          <v-btn :to="{ path: '/profile' }">
             <v-icon left>mdi-account-outline</v-icon>
-            <span>Profile</span>
+            <h5>Profile</h5>
           </v-btn>
           <v-spacer></v-spacer>
-<<<<<<< HEAD
-          <v-btn v-if="!isLoggedIn" variant="outlined" class="rounded bg-white mx-2" :to="{ path: '/login' }">
-            Sign in
-          </v-btn>
-          <v-btn v-if="!isLoggedIn" variant="outlined" class="rounded mx-2" :to="{ path: '/register' }">
-=======
           <v-btn
             v-if="!isLoggedIn"
             variant="outlined"
@@ -75,34 +66,12 @@ const goToLocation = () => {
             class="rounded mr-5"
             :to="{ path: '/register' }"
           >
->>>>>>> ac0b57573a0474a490b76cf4a206df46c656692d
             Sign up
           </v-btn>
-          <v-btn v-if="isLoggedIn" icon @click="onLogout" class="mx-2">
+          <v-btn v-if="isLoggedIn" icon @click="onLogout">
             <v-icon>mdi-export</v-icon>
           </v-btn>
         </v-toolbar>
-<<<<<<< HEAD
-
-        <v-row justify="center">
-          <v-col cols="12" sm="10" md="8" lg="6" xl="4" class="text-center">
-            <v-text-field
-              class="mb-2 pb-2 mt-2"
-              v-model="search"
-              label="Search for files, plugins, and creators"
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-              hide-details
-              single-line
-            ></v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-row justify="center">
-          <v-col cols="12" sm="10" md="8" lg="6" xl="4" class="text-center">
-            <!-- Items Area -->
-            <productList></productList>
-=======
       </div>
 
       <v-container fluid>
@@ -111,14 +80,10 @@ const goToLocation = () => {
             <!-- !! items area -->
             <productList></productList>
             <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
->>>>>>> ac0b57573a0474a490b76cf4a206df46c656692d
           </v-col>
         </v-row>
-        
-        <v-footer border app color="light-green lighten-2">
-          AgriHub2024
-        </v-footer>
       </v-container>
+      <v-footer border app color="light-green lighten-2">AgriHub2024</v-footer>
     </v-main>
   </v-app>
 </template>
