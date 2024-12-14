@@ -1,43 +1,78 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { supabase } from '@/utils/supabase.js';
+import { ref, computed, watch, onMounted } from 'vue'
+import { supabase } from '@/utils/supabase.js'
 
-const products = ref([]); // Reactive array to store products
-const page = ref(1); // Current page
-const perPage = ref(9); // Products per page
-const total = ref(0); // Total products count
+const products = ref([]) // Reactive array to store products
+const page = ref(1) // Current page
+const perPage = ref(9) // Products per page
+const total = ref(0) // Total products count
+const search = ref('') // Search term
 
 // Computed properties for pagination
-const totalPages = computed(() => Math.ceil(total.value / perPage.value));
-const start = computed(() => (page.value - 1) * perPage.value + 1);
-const end = computed(() => Math.min(page.value * perPage.value, total.value));
+const totalPages = computed(() => Math.ceil(total.value / perPage.value))
+const start = computed(() => (page.value - 1) * perPage.value + 1)
+const end = computed(() => Math.min(page.value * perPage.value, total.value))
 
 // Fetch products from the Supabase database
 const fetchProducts = async () => {
   try {
-    const { data, count, error } = await supabase
+    // Build the query with optional search filtering
+    let query = supabase
       .from('Product')
       .select('*', { count: 'exact' }) // Get products with count
-      .range((page.value - 1) * perPage.value, page.value * perPage.value - 1); // Range for pagination
+      .range((page.value - 1) * perPage.value, page.value * perPage.value - 1) // Range for pagination
 
-    if (error) {
-      console.error('Error fetching products:', error.message);
-      return;
+    if (search.value) {
+      // Apply a search filter if the search term is not empty
+      query = query.ilike('name', `%${search.value}%`)
     }
 
-    products.value = data || []; // Update products
-    total.value = count || 0; // Update total count
+    const { data, count, error } = await query
+
+    if (error) {
+      console.error('Error fetching products:', error.message)
+      return
+    }
+
+    products.value = data || [] // Update products
+    total.value = count || 0 // Update total count
   } catch (err) {
-    console.error('Unexpected error:', err);
+    console.error('Unexpected error:', err)
   }
-};
+}
+
+// Watch for changes in the page number and fetch products
+watch(page, fetchProducts)
+
+// Watch for changes in the search term and fetch products
+watch(search, () => {
+  page.value = 1 // Reset to the first page on search
+  fetchProducts()
+})
 
 // Fetch products when the component is mounted
 onMounted(() => {
-  fetchProducts();
-});
+  fetchProducts()
+})
 </script>
+
 <template>
+  <v-container>
+    <!-- Search Bar -->
+    <v-row class="d-flex justify-center">
+      <v-col cols="12" md="8" class="text-center">
+        <v-text-field
+          class="mb-2 pb-2 mt-2"
+          v-model="search"
+          label="Search...."
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          hide-details
+          single-line
+        ></v-text-field>
+      </v-col>
+    </v-row>
+  </v-container>
   <v-container>
     <!-- Product Cards -->
     <v-row>
@@ -59,30 +94,24 @@ onMounted(() => {
     </v-row>
 
     <!-- Pagination -->
-    <v-pagination
-      v-model="page"
-      :length="totalPages"
-      @input="fetchProducts"
-    ></v-pagination>
+    <v-pagination v-model="page" :length="totalPages"></v-pagination>
 
     <!-- Pagination Details -->
-    <div>
-      Showing {{ start }}-{{ end }} of {{ total }} results
-    </div>
+    <div>Showing {{ start }}-{{ end }} of {{ total }} results</div>
 
     <!-- Navigation Buttons -->
     <div class="mt-3">
       <v-btn
-        class = "mr-3"
+        class="mr-3"
         :disabled="page === 1"
-        @click="page > 1 && (page--, fetchProducts())"
+        @click="page > 1 && page--"
         color="secondary"
       >
         Previous
       </v-btn>
       <v-btn
         :disabled="page === totalPages"
-        @click="page < totalPages && (page++, fetchProducts())"
+        @click="page < totalPages && page++"
         color="secondary"
       >
         Next
