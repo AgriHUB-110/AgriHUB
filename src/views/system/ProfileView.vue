@@ -1,16 +1,32 @@
 <script setup>
-import { modals, showModal, closeModal, handleLogout, formData, formAction, getCurrentUserId, submitProduct, resetForm } from '@/utils/ProfileView.js'
+import { onMounted } from 'vue'
+import {
+  modals,
+  showModal,
+  closeModal,
+  handleLogout,
+  formData,
+  formAction,
+  getCurrentUserId,
+  submitProduct,
+  resetForm,
+  getSellerProducts,
+  products,
+} from '@/utils/ProfileView.js'
 import { useRouter } from 'vue-router'
 import headerAH from '@/components/common/headerAH.vue'
 import UserProfile from '@/components/common/userProfile.vue'
 import { requiredValidator, integerValidator } from '@/utils/validator.js'
 import notif from '@/components/common/notif.vue'
 
+// Logout function
 const router = useRouter()
-
-// If handleLogout function depends on router, it should be used inside the setup:
 const logout = () => handleLogout(router)
 
+// Load seller products when component is mounted
+onMounted(async () => {
+  await getSellerProducts()
+})
 </script>
 <style>
 .profile-card {
@@ -70,7 +86,6 @@ const logout = () => handleLogout(router)
                   </v-list-item-icon>
                   <v-list-item-title>My Products</v-list-item-title>
                 </v-list-item>
-
 
                 <!-- Payment Method -->
                 <v-list-item @click="showModal('paymentMethod')">
@@ -193,7 +208,7 @@ const logout = () => handleLogout(router)
           </v-card>
         </v-dialog>
 
-        <!-- My  products  -->
+        <!-- My Products -->
         <v-dialog v-model="modals.myProducts" max-width="600">
           <v-card>
             <v-toolbar flat>
@@ -203,11 +218,40 @@ const logout = () => handleLogout(router)
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text> Buy Products content goes here. </v-card-text>
+
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                    v-for="product in products"
+                    :key="product.id"
+                    cols="12"
+                    md="4"
+                  >
+                    <v-card>
+                      <v-card-title>{{ product.name }}</v-card-title>
+                      <v-card-subtitle>{{
+                        product.description
+                      }}</v-card-subtitle>
+                      <v-card-text>Price: ${{ product.price }}</v-card-text>
+
+                      <v-card-actions>
+                        <v-btn color="primary" @click="viewDetails(product.id)">
+                          Details
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
+
+              <!-- Handle no products -->
+              <div v-if="products.length === 0" class="text-center">
+                No products available.
+              </div>
+            </v-card-text>
           </v-card>
         </v-dialog>
-
-
 
         <!-- Payment Method Modal -->
         <v-dialog v-model="modals.paymentMethod" max-width="600">
