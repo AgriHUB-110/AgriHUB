@@ -163,6 +163,36 @@ export const resetForm = () => {
     price: '',
     category: '',
     stock: '',
-    image_path: null,
+  }
+}
+
+export default {
+  data() {
+    return {
+      modals: {
+        myOrders: false,
+      },
+      orders: [
+        { orderNo: "SO-136693", orderDate: "9/21/2017", billToName: "John", total: "$9,128.43", status: "Pending" },
+        { orderNo: "SO-136692", orderDate: "9/21/2017", billToName: "John", total: "$9,128.43", status: "Pending" },
+        { orderNo: "SO-136690", orderDate: "9/20/2017", billToName: "Jessica", total: "$4,262.32", status: "Pending" },
+      ],
+    };
+  },
+  methods: {
+    closeModal(modalName) {
+      this.modals[modalName] = false;
+    },
+    viewDetails(orderNo) {
+      console.log(`Viewing details for order ${orderNo}`);
+      // Implement order details view logic here
+    },
+    getStatusClass(status) {
+      return {
+        "text-warning font-weight-bold": status === "Pending",
+        "text-success font-weight-bold": status === "Completed",
+        "text-danger font-weight-bold": status === "Cancelled",
+      };
+    },
   }
 }
