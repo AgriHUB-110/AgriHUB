@@ -85,3 +85,39 @@ body {
     padding: 10px; /* Reduce padding for small screens */
   }
 }
+
+/* Header Styles */
+.v-toolbar {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Table Header */
+th {
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 10px 15px;
+}
+
+/* Table Rows */
+td {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Status Styles */
+.text-warning {
+  color: #ffa000;
+}
+.text-success {
+  color: #4caf50;
+}
+.text-danger {
+  color: #f44336;
+}
+
+/* Buttons */
+.v-btn {
+  text-transform: none;
+  font-size: 12px;
+}

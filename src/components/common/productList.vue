@@ -1,12 +1,15 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase.js'
 
+const router = useRouter() // Add router for navigation
 const products = ref([]) // Reactive array to store products
 const page = ref(1) // Current page
 const perPage = ref(9) // Products per page
 const total = ref(0) // Total products count
 const search = ref('') // Search term
+const cart = ref([]) // Cart array to store selected products
 
 // Computed properties for pagination
 const totalPages = computed(() => Math.ceil(total.value / perPage.value))
@@ -54,6 +57,13 @@ watch(search, () => {
 onMounted(() => {
   fetchProducts()
 })
+
+// Function to add product to cart and navigate to cart page
+const addToCart = (product) => {
+  cart.value.push(product)
+  console.log('Product added to cart:', product)
+  router.push('/cart') // Navigate to cart page
+}
 </script>
 
 <template>
@@ -88,6 +98,7 @@ onMounted(() => {
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
           <v-card-actions>
             <v-btn color="primary">Details</v-btn>
+            <v-btn color="success" @click="addToCart(product)">Buy</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
