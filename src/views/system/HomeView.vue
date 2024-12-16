@@ -1,7 +1,13 @@
 <script setup>
-import headerAH from '@/components/common/headerAH.vue'
-import productList from '@/components/common/productList.vue'
+import { useHomeView, userEmail, isLoggedIn, onLogout } from '@/utils/HomeView.js'; // Importing the functions
+import { useRouter } from 'vue-router';
+import productList from '@/components/common/productList.vue'; // Correct case for component name
+import headerAH from '@/components/common/headerAH.vue'; // Correct case for component name
+
+useHomeView(); // Initialize the setup
+const router = useRouter();
 </script>
+
 
 <style scoped>
 .v-card {

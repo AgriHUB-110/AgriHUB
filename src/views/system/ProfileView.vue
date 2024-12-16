@@ -1,8 +1,18 @@
 <script setup>
-import { modals, showModal, closeModal, handleLogout, formData, formAction, getCurrentUserId, submitProduct, resetForm } from '@/utils/ProfileView.js'
+import {
+  modals,
+  showModal,
+  closeModal,
+  handleLogout,
+  formData,
+  formAction,
+  getCurrentUserId,
+  submitProduct,
+  resetForm,
+} from '@/utils/ProfileView.js'
 import { useRouter } from 'vue-router'
 import headerAH from '@/components/common/headerAH.vue'
-import UserProfile from '@/components/common/userProfile.vue'
+import userProfile from '@/components/common/userProfile.vue'
 import { requiredValidator, integerValidator } from '@/utils/validator.js'
 import notif from '@/components/common/notif.vue'
 
@@ -10,9 +20,7 @@ const router = useRouter()
 
 // If handleLogout function depends on router, it should be used inside the setup:
 const logout = () => handleLogout(router)
-
 </script>
-
 
 <style scoped>
 .profile-card {
@@ -47,28 +55,28 @@ const logout = () => handleLogout(router)
                 <v-list-item-title>My Profile</v-list-item-title>
               </v-list-item>
 
-                <!-- My orders -->
-                <v-list-item @click="showModal('myOrders')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-package-variant</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>My Orders</v-list-item-title>
-                </v-list-item>
-                <!-- Buy products -->
-                <v-list-item @click="showModal('buyProducts')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-cart-plus</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Buy Products</v-list-item-title>
-                </v-list-item>
+              <!-- My orders -->
+              <v-list-item @click="showModal('myOrders')">
+                <v-list-item-icon>
+                  <v-icon>mdi-package-variant</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>My Orders</v-list-item-title>
+              </v-list-item>
+              <!-- Buy products -->
+              <v-list-item @click="showModal('buyProducts')">
+                <v-list-item-icon>
+                  <v-icon>mdi-cart-plus</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Buy Products</v-list-item-title>
+              </v-list-item>
 
-                <!-- Add products -->
-                <v-list-item @click="showModal('addProduct')">
-                  <v-list-item-icon>
-                    <v-icon class="mdi mdi-archive-plus-outline"></v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Add Products</v-list-item-title>
-                </v-list-item>
+              <!-- Add products -->
+              <v-list-item @click="showModal('addProduct')">
+                <v-list-item-icon>
+                  <v-icon class="mdi mdi-archive-plus-outline"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Add Products</v-list-item-title>
+              </v-list-item>
 
               <!-- My products -->
               <v-list-item @click="showModal('myProducts')">
@@ -78,42 +86,42 @@ const logout = () => handleLogout(router)
                 <v-list-item-title>My Products</v-list-item-title>
               </v-list-item>
 
-                <!-- Sell products -->
-                <v-list-item @click="showModal('sellProducts')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-cash</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Sell Products</v-list-item-title>
-                </v-list-item>
-                <!-- My subscriptions -->
-                <v-list-item @click="showModal('mySubscriptions')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-receipt</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>My Subscription</v-list-item-title>
-                </v-list-item>
-                <!-- Payment Method -->
-                <v-list-item @click="showModal('paymentMethod')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-credit-card</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Payment Method</v-list-item-title>
-                </v-list-item>
-                <!-- Oder tracking -->
-                <v-list-item @click="showModal('orderTracking')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-truck-delivery</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Order Tracking</v-list-item-title>
-                </v-list-item>
-                <!-- Wishlist -->
-                <v-list-item @click="showModal('wishlist')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-heart</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Wishlist</v-list-item-title>
-                </v-list-item>
-              </v-list>
+              <!-- Sell products -->
+              <v-list-item @click="showModal('sellProducts')">
+                <v-list-item-icon>
+                  <v-icon>mdi-cash</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Sell Products</v-list-item-title>
+              </v-list-item>
+              <!-- My subscriptions -->
+              <v-list-item @click="showModal('mySubscriptions')">
+                <v-list-item-icon>
+                  <v-icon>mdi-receipt</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>My Subscription</v-list-item-title>
+              </v-list-item>
+              <!-- Payment Method -->
+              <v-list-item @click="showModal('paymentMethod')">
+                <v-list-item-icon>
+                  <v-icon>mdi-credit-card</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Payment Method</v-list-item-title>
+              </v-list-item>
+              <!-- Oder tracking -->
+              <v-list-item @click="showModal('orderTracking')">
+                <v-list-item-icon>
+                  <v-icon>mdi-truck-delivery</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Order Tracking</v-list-item-title>
+              </v-list-item>
+              <!-- Wishlist -->
+              <v-list-item @click="showModal('wishlist')">
+                <v-list-item-icon>
+                  <v-icon>mdi-heart</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Wishlist</v-list-item-title>
+              </v-list-item>
+            </v-list>
 
             <!-- Logout Button -->
             <v-btn color="error" @click="handleLogout" class="mt-4">
@@ -142,84 +150,82 @@ const logout = () => handleLogout(router)
         </v-card>
       </v-dialog>
 
-        <!-- My Orders Modal -->
-        <v-dialog v-model="modals.myOrders" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>My Orders</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('myOrders')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> My Orders content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- My Orders Modal -->
+      <v-dialog v-model="modals.myOrders" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>My Orders</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('myOrders')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> My Orders content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
-        <!-- Buy Products Modal -->
-        <v-dialog v-model="modals.buyProducts" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Buy Products</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('buyProducts')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Buy Products content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- Buy Products Modal -->
+      <v-dialog v-model="modals.buyProducts" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>Buy Products</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('buyProducts')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> Buy Products content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
-        <!-- Add Product Modal -->
-        <v-dialog v-model="modals.addProduct" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Add Products</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('addProduct')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text>
-              Add Products content goes here.
-              <notif
-            :form-success-message="formAction.formSuccessMessage"
-            :form-error-message="formAction.formErrorMessage"
-          ></notif>
-              <v-form @submit.prevent="submitProduct">
-                <v-text-field
-                  label="Name"
-                  v-model="formData.name"
-                  :rules="[requiredValidator]"
-                ></v-text-field>
-                <v-text-field
-                  label="Description"
-                  v-model="formData.description"
-                  :rules="[requiredValidator]"
-                ></v-text-field>
-                <v-text-field
-                  label="Price"
-                  v-model="formData.price"
-                  :rules="[requiredValidator, integerValidator]"
-                ></v-text-field>
-                <v-text-field
-                  label="Category"
-                  v-model="formData.category"
-                  :rules="[requiredValidator]"
-                ></v-text-field>
-                <v-text-field
-                  label="Stock"
-                  type="number"
-                  v-model="formData.stock"
-                  :rules="[requiredValidator, integerValidator]"
-                ></v-text-field>
-                <v-btn type="submit"
-                class="mt-3"
-                >Save</v-btn>
-              </v-form>
-            </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- Add Product Modal -->
+      <v-dialog v-model="modals.addProduct" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>Add Products</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('addProduct')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text>
+            Add Products content goes here.
+            <notif
+              :form-success-message="formAction.formSuccessMessage"
+              :form-error-message="formAction.formErrorMessage"
+            ></notif>
+            <v-form @submit.prevent="submitProduct">
+              <v-text-field
+                label="Name"
+                v-model="formData.name"
+                :rules="[requiredValidator]"
+              ></v-text-field>
+              <v-text-field
+                label="Description"
+                v-model="formData.description"
+                :rules="[requiredValidator]"
+              ></v-text-field>
+              <v-text-field
+                label="Price"
+                v-model="formData.price"
+                :rules="[requiredValidator, integerValidator]"
+              ></v-text-field>
+              <v-text-field
+                label="Category"
+                v-model="formData.category"
+                :rules="[requiredValidator]"
+              ></v-text-field>
+              <v-text-field
+                label="Stock"
+                type="number"
+                v-model="formData.stock"
+                :rules="[requiredValidator, integerValidator]"
+              ></v-text-field>
+              <v-btn type="submit" class="mt-3">Save</v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <!-- My  products  -->
       <v-dialog v-model="modals.myProducts" max-width="600">
@@ -235,33 +241,33 @@ const logout = () => handleLogout(router)
         </v-card>
       </v-dialog>
 
-        <!-- Sell Products Modal -->
-        <v-dialog v-model="modals.sellProducts" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Sell Products</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('sellProducts')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Sell Products content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- Sell Products Modal -->
+      <v-dialog v-model="modals.sellProducts" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>Sell Products</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('sellProducts')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> Sell Products content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
-        <!-- My Subscriptions Modal -->
-        <v-dialog v-model="modals.mySubscriptions" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>My Subscription</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('mySubscriptions')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> My Subscriptions content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- My Subscriptions Modal -->
+      <v-dialog v-model="modals.mySubscriptions" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>My Subscription</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('mySubscriptions')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> My Subscriptions content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <!-- Payment Method Modal -->
       <v-dialog v-model="modals.paymentMethod" max-width="600">
