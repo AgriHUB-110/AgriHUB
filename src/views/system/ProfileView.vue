@@ -369,7 +369,7 @@ onMounted(async () => {
             </v-card-text>
           </v-card>
         </v-dialog>
-
+<!--Order tracking modal-->
   <v-dialog v-model="modals.orderTracking" max-width="600">
     <v-card>
       <v-toolbar flat>
@@ -414,22 +414,6 @@ onMounted(async () => {
     </v-card>
   </v-dialog>
 
-
-
-
-        <!-- Wishlist Modal -->
-        <v-dialog v-model="modals.wishlist" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Wishlist</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('wishlist')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Wishlist content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
       </v-container>
     </v-main>
   </v-app>
