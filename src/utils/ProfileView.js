@@ -1,5 +1,5 @@
 // utils/ProfileView.js
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase.js'
 import { formActionDefault } from '@/utils/supabase.js'
@@ -60,24 +60,63 @@ export const getCurrentUserId = async () => {
       return null
     }
 
-    // Query the User table for the corresponding user ID
     const { data: userData, error: userError } = await supabase
       .from('User')
-      .select('id') // Select the primary key (user table ID)
-      .eq('user_id', authUserId) // Match the foreign key
-      .single() // Fetch a single row
+      .select('id')
+      .eq('user_id', authUserId)
+      .single()
 
     if (userError) {
       console.error('Error retrieving user table ID:', userError.message)
       return null
     }
     console.log('User Table ID:', userData.id)
-    return userData.id // Return the user table ID
+    return userData.id
   } catch (err) {
     console.error('Unexpected error:', err)
     return null
   }
 }
+
+// Reactive reference for products
+export const products = ref([])
+
+// Retrieve Seller products
+export const getSellerProducts = async () => {
+  try {
+    // Get the authenticated user's ID from the User table
+    const userId = await getCurrentUserId()
+    if (!userId) {
+      console.warn('No authenticated user found.')
+      return []
+    }
+
+    // Fetch products where `seller_id` matches the user's ID
+    const { data: productData, error: productError } = await supabase
+      .from('Product')
+      .select('*')
+      .eq('seller_id', userId)
+      .order('date_added', { ascending: false })
+
+    if (productError) {
+      console.error('Error retrieving products:', productError.message)
+      return []
+    }
+
+    // Bind the fetched products to the reactive reference
+    products.value = productData
+
+    return productData
+  } catch (err) {
+    console.error('Unexpected error:', err)
+    return []
+  }
+}
+
+// Fetch products on component mount
+onMounted(async () => {
+  products.value = await getSellerProducts()
+})
 
 // Function to handle form submission
 export const submitProduct = async () => {
@@ -91,10 +130,8 @@ export const submitProduct = async () => {
     return
   }
 
-  // Get the current date and time
   const dateAdded = new Date().toISOString()
 
-  // Insert data into Supabase Product table
   const { error } = await supabase.from('Product').insert([
     {
       name: formData.value.name,
@@ -102,13 +139,12 @@ export const submitProduct = async () => {
       price: formData.value.price,
       category: formData.value.category,
       stock: formData.value.stock,
-      date_added: dateAdded, // Set the date_added field
-      seller_id: userId, // Manually set the seller_id
-      // image_path: imagePath, // Set the image_path field
+      date_added: dateAdded,
+      seller_id: userId,
+      // image_path: formData.value.image_path,
     },
   ])
 
-  // Handle response
   if (error) {
     formAction.value.formErrorMessage = error.message
     formAction.value.formStatus = error.status

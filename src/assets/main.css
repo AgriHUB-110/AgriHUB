@@ -1,22 +1,28 @@
 @import './base.css';
 
 html,
-body{
+body {
   font-family: 'Monument Extended';
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
+
 .glass-card1 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 101%;
+  width: 100%; /* Ensure full width */
   height: 100%;
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 0; /* Remove border radius to cover the full area */
-  padding: 0; /* Remove padding to ensure it covers the entire area */
-  box-shadow: none; /* Remove shadow to avoid box-shadow clipping */
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: none; /* Remove border for a full background effect */
+  border: none;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,19 +37,26 @@ body{
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
 .main-background {
   background-image: url('/images/agri2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   width: 100%;
-  height: auto; /* Adjust as necessary */
-  position: relative;
+  height: auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px; /* Add padding for better spacing */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
+
 .profile-card {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 10px; /* Add margin for spacing */
 }
 
 .v-list-item {
@@ -53,4 +66,58 @@ body{
 
 .v-list-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.v-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  margin: 10px; /* Add margin for spacing */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .glass-card1, .glass-card, .profile-card, .v-card {
+    padding: 10px; /* Adjust padding for small screens */
+    border-radius: 8px; /* Adjust border radius for small screens */
+  }
+  
+  .main-background {
+    padding: 10px; /* Reduce padding for small screens */
+  }
+}
+
+/* Header Styles */
+.v-toolbar {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Table Header */
+th {
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 10px 15px;
+}
+
+/* Table Rows */
+td {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Status Styles */
+.text-warning {
+  color: #ffa000;
+}
+.text-success {
+  color: #4caf50;
+}
+.text-danger {
+  color: #f44336;
+}
+
+/* Buttons */
+.v-btn {
+  text-transform: none;
+  font-size: 12px;
 }
