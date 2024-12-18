@@ -20,8 +20,8 @@ body {
   border-radius: 0; /* Remove border radius to cover the full area */
   padding: 0; /* Remove padding to ensure it covers the entire area */
   box-shadow: none; /* Remove shadow to avoid box-shadow clipping */
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: none; /* Remove border for a full background effect */
   display: flex;
   justify-content: center;
