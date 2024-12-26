@@ -15,7 +15,12 @@ onMounted(() => {
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
-      <v-app-bar class="px-3" :color="theme === 'light' ? 'light-green-lighten-3' : 'light-green-darken-4'">
+      <v-app-bar
+        class="px-3"
+        :color="
+          theme === 'light' ? 'light-green-lighten-3' : 'light-green-darken-4'
+        "
+      >
         <v-toolbar-title>
           <router-link
             class="text-decoration-none text-black"
@@ -26,8 +31,18 @@ onMounted(() => {
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <div class="theme-switch" @click="onClick">
-          <div :class="['switch', theme === 'light' ? 'switch-light' : 'switch-dark']"></div>
-          <div :class="['switch-handle', theme === 'light' ? 'handle-light' : 'handle-dark']"></div>
+          <div
+            :class="[
+              'switch',
+              theme === 'light' ? 'switch-light' : 'switch-dark',
+            ]"
+          ></div>
+          <div
+            :class="[
+              'switch-handle',
+              theme === 'light' ? 'handle-light' : 'handle-dark',
+            ]"
+          ></div>
         </div>
       </v-app-bar>
 
@@ -35,7 +50,13 @@ onMounted(() => {
         <v-container fluid>
           <slot name="content"></slot>
         </v-container>
-        <v-footer border app :color="theme === 'light' ? 'light-green-lighten-3' : 'light-green-darken-4'">
+        <v-footer
+          border
+          app
+          :color="
+            theme === 'light' ? 'light-green-lighten-3' : 'light-green-darken-4'
+          "
+        >
           AgriHub2024
         </v-footer>
       </v-main>

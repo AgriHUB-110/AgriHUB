@@ -77,7 +77,7 @@ onMounted(() => {
             <v-img src="/images/Phase3.gif" height="375"></v-img>
           </v-col>
           <v-col cols="12" md="4" class="mx-auto">
-            <v-card class="mx-auto" color="light-green-lighten-3" >
+            <v-card class="mx-auto" color="light-green-lighten-3">
               <v-card-title>
                 <v-img
                   src="/images/logo.jpg"
@@ -148,7 +148,6 @@ onMounted(() => {
                   >
                 </p>
               </v-form>
-           
             </v-card>
           </v-col>
         </v-row>

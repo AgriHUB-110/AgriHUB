@@ -139,7 +139,7 @@ const mainBackgroundClass = computed(() => {
         <v-card color="light-green-lighten-2">
           <v-card-title class="headline">About</v-card-title>
 
-          <v-card-text >
+          <v-card-text>
             <p>
               The Agri Hub Inventory Management System is designed to optimize
               the management and distribution of agricultural products. By
@@ -194,7 +194,7 @@ const mainBackgroundClass = computed(() => {
       <v-dialog v-model="showInsightsModal" max-width="1000">
         <v-card color="light-green-lighten-2">
           <v-card-title class="headline">Insights</v-card-title>
-          <v-card-text >
+          <v-card-text>
             <p><strong>Agri Hub Insights:</strong></p>
 
             <p><strong>Stock Level Analysis:</strong></p>

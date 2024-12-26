@@ -7,12 +7,11 @@ import {
 } from '@/utils/HomeView.js' // Importing the functions
 import { useRouter } from 'vue-router'
 import productList from '@/components/common/productList.vue'
-import headerAH from '@/components/common/headerAH.vue';
+import headerAH from '@/components/common/headerAH.vue'
 
 useHomeView() // Initialize the setup
 const router = useRouter()
 </script>
-
 
 <style scoped>
 .v-card {
@@ -53,10 +52,6 @@ const router = useRouter()
           </v-col>
         </v-row>
       </v-container>
-
-  </template>
-</headerAH>
+    </template>
+  </headerAH>
 </template>
-
-      
-  
