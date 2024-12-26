@@ -114,200 +114,304 @@ const logout = () => handleLogout(router)
               Logout
             </v-btn>
           </v-card>
-        </v-col>
-      </v-row>
+        </v-dialog>
 
-      <!-- Modals -->
+        <!-- My Order Modal -->
+        <v-dialog v-model="modals.myOrders" max-width="900">
+          <v-card class="elevation-4">
+            <!-- Modal Header -->
+            <v-toolbar flat color="white" class="border-bottom">
+              <v-toolbar-title class="text-h6 font-weight-bold"
+                >Order Status</v-toolbar-title
+              >
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('myOrders')">
+                <v-icon color="grey">mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
 
-      <!-- My profile Modal -->
-      <v-dialog v-model="modals.myProfile" max-width="600">
-        <v-card>
-          <v-toolbar flat>
-            <v-toolbar-title>My Profile</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('myProfile')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text>
-            <!-- My Profile content goes here. -->
-            <UserProfile></UserProfile>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+            <!-- Modal Content -->
+            <v-card-text class="py-4 px-6">
+              <v-simple-table>
+                <template v-slot:default>
+                  <!-- Table Header -->
+                  <thead>
+                    <tr>
+                      <th class="text-left text-grey darken-1 font-weight-bold">
+                        Order no.
+                      </th>
+                      <th class="text-left text-grey darken-1 font-weight-bold">
+                        Order date
+                      </th>
+                      <th class="text-left text-grey darken-1 font-weight-bold">
+                        Bill-to name
+                      </th>
+                      <th
+                        class="text-right text-grey darken-1 font-weight-bold"
+                      >
+                        Total
+                      </th>
+                      <th class="text-left text-grey darken-1 font-weight-bold">
+                        Order status
+                      </th>
+                      <th class="text-left"></th>
+                    </tr>
+                  </thead>
+                  <!-- Table Body -->
+                  <tbody>
+                    <tr v-for="order in orders" :key="order.orderNo">
+                      <td>{{ order.orderNo }}</td>
+                      <td>{{ order.orderDate }}</td>
+                      <td>{{ order.billToName }}</td>
+                      <td class="text-right">{{ order.total }}</td>
+                      <td>
+                        <span :class="getStatusClass(order.status)">
+                          {{ order.status }}
+                        </span>
+                      </td>
+                      <td>
+                        <v-btn
+                          text
+                          small
+                          color="primary"
+                          @click="viewDetails(order.orderNo)"
+                        >
+                          <span class="text-caption font-weight-bold"
+                            >› View details</span
+                          >
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+            </v-card-text>
 
-      <!-- My Orders Modal -->
-      <v-dialog v-model="modals.myOrders" max-width="600">
-        <v-card>
-          <v-toolbar flat>
-            <v-toolbar-title>My Orders</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('myOrders')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text> My Orders content goes here. </v-card-text>
-        </v-card>
-      </v-dialog>
+            <!-- Footer -->
+            <v-card-actions class="justify-end px-6 py-3">
+              <v-btn color="primary" @click="closeModal('myOrders')">
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-      <!-- Add Product Modal -->
-      <v-dialog v-model="modals.addProduct" max-width="600">
-        <v-card>
-          <v-toolbar flat>
-            <v-toolbar-title>Add Products</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('addProduct')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text>
-            Add Products content goes here.
-            <notif
-              :form-success-message="formAction.formSuccessMessage"
-              :form-error-message="formAction.formErrorMessage"
-            ></notif>
-            <v-form @submit.prevent="submitProduct">
-              <v-text-field
-                label="Name"
-                v-model="formData.name"
-                :rules="[requiredValidator]"
-              ></v-text-field>
-              <v-text-field
-                label="Description"
-                v-model="formData.description"
-                :rules="[requiredValidator]"
-              ></v-text-field>
-              <v-text-field
-                label="Price"
-                v-model="formData.price"
-                :rules="[requiredValidator, integerValidator]"
-              ></v-text-field>
-              <v-text-field
-                label="Category"
-                v-model="formData.category"
-                :rules="[requiredValidator]"
-              ></v-text-field>
-              <v-text-field
-                label="Stock"
-                type="number"
-                v-model="formData.stock"
-                :rules="[requiredValidator, integerValidator]"
-              ></v-text-field>
-              <v-btn type="submit" class="mt-3">Save</v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+        <!-- Add Product Modal -->
+        <v-dialog v-model="modals.addProduct" max-width="600">
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>Add Products</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('addProduct')">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text>
+              Add Products content goes here.
+              <notif
+                :form-success-message="formAction.formSuccessMessage"
+                :form-error-message="formAction.formErrorMessage"
+              ></notif>
+              <v-form @submit.prevent="submitProduct">
+                <v-text-field
+                  label="Name"
+                  v-model="formData.name"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Description"
+                  v-model="formData.description"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Price"
+                  v-model="formData.price"
+                  :rules="[requiredValidator, integerValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Category"
+                  v-model="formData.category"
+                  :rules="[requiredValidator]"
+                ></v-text-field>
+                <v-text-field
+                  label="Stock"
+                  type="number"
+                  v-model="formData.stock"
+                  :rules="[requiredValidator, integerValidator]"
+                ></v-text-field>
 
-      <!-- My  products  -->
-      <v-dialog v-model="modals.myProducts" max-width="600">
-        <v-card>
-          <v-toolbar flat>
-            <v-toolbar-title>My Products</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('myProducts')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text> Buy Products content goes here. </v-card-text>
-        </v-card>
-      </v-dialog>
-
-      <!-- Payment Method Modal -->
-      <v-dialog v-model="modals.paymentMethod" max-width="600">
-        <v-card class="elevation-10">
-          <v-toolbar flat color="blue-grey lighten-4">
-            <v-toolbar-title>Payment Method</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('paymentMethod')">
-              <v-icon>mdi-arrow-left-circle</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text class="pa-4">
-            <v-row>
-              <!-- Debit/Credit Card Option -->
-              <v-col cols="12" md="6">
-                <v-btn
-                  tile
-                  block
-                  color="blue-grey lighten-2"
-                  @click="selectPaymentMethod('Debit/Credit Card')"
+                <!-- <v-file-input
+                  v-model="formData.image"
+                  :rules="[requiredValidator]"
+                  accept="image/*"
                 >
-                  <v-icon left>mdi-credit-card</v-icon>
-                  Debit/Credit Card
-                </v-btn>
-              </v-col>
+                </v-file-input> -->
+                <v-btn type="submit" class="mt-3">Save</v-btn>
+              </v-form>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
 
-              <!-- GCash Option -->
-              <v-col cols="12" md="6">
-                <v-btn
-                  tile
-                  block
-                  color="blue-grey lighten-2"
-                  @click="selectPaymentMethod('GCash')"
-                >
-                  <v-icon left>mdi-phone-check</v-icon>
-                  GCash
-                </v-btn>
-              </v-col>
+        <!-- My Products -->
+        <v-dialog v-model="modals.myProducts" max-width="600">
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>My Products</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('myProducts')">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
 
-              <!-- Bank Transfer Option -->
-              <v-col cols="12" md="6">
-                <v-btn
-                  tile
-                  block
-                  color="blue-grey lighten-2"
-                  @click="selectPaymentMethod('Bank Transfer')"
-                >
-                  <v-icon left>mdi-bank</v-icon>
-                  Bank Transfer
-                </v-btn>
-              </v-col>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                    v-for="product in products"
+                    :key="product.id"
+                    cols="12"
+                    md="4"
+                  >
+                    <v-card>
+                      <v-card-title>{{ product.name }}</v-card-title>
+                      <v-card-subtitle>{{
+                        product.description
+                      }}</v-card-subtitle>
+                      <v-card-text>Price: ${{ product.price }}</v-card-text>
 
-              <!-- Cash on Delivery Option -->
-              <v-col cols="12" md="6">
-                <v-btn
-                  tile
-                  block
-                  color="blue-grey lighten-2"
-                  @click="selectPaymentMethod('Cash on Delivery')"
-                >
-                  <v-icon left>mdi-cash</v-icon>
-                  Cash on Delivery
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+                      <v-card-actions>
+                        <v-btn color="primary" @click="viewDetails(product.id)">
+                          Details
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-container>
 
-      <!-- Order Tracking Modal -->
-      <v-dialog v-model="modals.orderTracking" max-width="600">
-        <v-card>
-          <v-toolbar flat>
-            <v-toolbar-title>Order Tracking</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('orderTracking')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text> Order Tracking content goes here. </v-card-text>
-        </v-card>
-      </v-dialog>
+              <!-- Handle no products -->
+              <div v-if="products.length === 0" class="text-center">
+                No products available.
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
 
-      <!-- Wishlist Modal -->
-      <v-dialog v-model="modals.wishlist" max-width="600">
-        <v-card>
-          <v-toolbar flat>
-            <v-toolbar-title>Wishlist</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="closeModal('wishlist')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <v-card-text> Wishlist content goes here. </v-card-text>
-        </v-card>
-      </v-dialog>
-    </template>
-  </headerAH>
+        <!-- Payment Method Modal -->
+        <v-dialog v-model="modals.paymentMethod" max-width="600">
+          <v-card class="elevation-10">
+            <v-toolbar flat color="blue-grey lighten-4">
+              <v-toolbar-title>Payment Method</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('paymentMethod')">
+                <v-icon>mdi-arrow-left-circle</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text class="pa-4">
+              <v-row>
+                <!-- Debit/Credit Card Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('Debit/Credit Card')"
+                  >
+                    <v-icon left>mdi-credit-card</v-icon>
+                    Debit/Credit Card
+                  </v-btn>
+                </v-col>
+
+                <!-- GCash Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('GCash')"
+                  >
+                    <v-icon left>mdi-phone-check</v-icon>
+                    GCash
+                  </v-btn>
+                </v-col>
+
+                <!-- Bank Transfer Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('Bank Transfer')"
+                  >
+                    <v-icon left>mdi-bank</v-icon>
+                    Bank Transfer
+                  </v-btn>
+                </v-col>
+
+                <!-- Cash on Delivery Option -->
+                <v-col cols="12" md="6">
+                  <v-btn
+                    tile
+                    block
+                    color="blue-grey lighten-2"
+                    @click="selectPaymentMethod('Cash on Delivery')"
+                  >
+                    <v-icon left>mdi-cash</v-icon>
+                    Cash on Delivery
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+        <!--Order tracking modal-->
+        <v-dialog v-model="modals.orderTracking" max-width="600">
+          <v-card>
+            <v-toolbar flat>
+              <v-toolbar-title>Order Tracking</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-btn icon @click="closeModal('orderTracking')">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="trackingNumber"
+                      label="Enter Tracking Number"
+                      outlined
+                    ></v-text-field>
+                    <v-btn color="primary" @click="trackOrder"
+                      >Track Order</v-btn
+                    >
+                  </v-col>
+                </v-row>
+                <v-row v-if="order">
+                  <v-col cols="12">
+                    <h3>Order Status: {{ order.status }}</h3>
+                    <v-timeline>
+                      <v-timeline-item
+                        v-for="(event, index) in order.events"
+                        :key="index"
+                        :color="event.color"
+                        :icon="event.icon"
+                      >
+                        <template v-slot:opposite>
+                          {{ event.date }}
+                        </template>
+                        {{ event.description }}
+                      </v-timeline-item>
+                    </v-timeline>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+      </v-container>
+    </v-main>
+  </v-app>
+ </headerAH>
 </template>

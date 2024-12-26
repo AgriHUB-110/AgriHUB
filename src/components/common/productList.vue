@@ -3,13 +3,15 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase.js'
 
-const router = useRouter() // Add router for navigation
+const router = useRouter()
 const products = ref([]) // Reactive array to store products
 const page = ref(1) // Current page
 const perPage = ref(9) // Products per page
 const total = ref(0) // Total products count
 const search = ref('') // Search term
 const cart = ref([]) // Cart array to store selected products
+const selectedProduct = ref(null) // Selected product for modal
+const showModal = ref(false) // Modal visibility
 
 // Computed properties for pagination
 const totalPages = computed(() => Math.ceil(total.value / perPage.value))
@@ -22,7 +24,7 @@ const fetchProducts = async () => {
     // Build the query with optional search filtering
     let query = supabase
       .from('Product')
-      .select('*', { count: 'exact' }) // Get products with count
+      .select('product_id, name, description, price, stock, rating', { count: 'exact' }) // Include necessary fields
       .range((page.value - 1) * perPage.value, page.value * perPage.value - 1) // Range for pagination
 
     if (search.value) {
@@ -64,6 +66,12 @@ const addToCart = product => {
   console.log('Product added to cart:', product)
   router.push('/cart') // Navigate to cart page
 }
+
+// Function to show product details in a modal
+const showDetails = (product) => {
+  selectedProduct.value = product // Set the selected product
+  showModal.value = true // Open the modal
+}
 </script>
 
 <template>
@@ -83,6 +91,7 @@ const addToCart = product => {
       </v-col>
     </v-row>
   </v-container>
+
   <v-container>
     <!-- Product Cards -->
     <v-row>
@@ -97,7 +106,7 @@ const addToCart = product => {
           <v-card-title>{{ product.name }}</v-card-title>
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
           <v-card-actions>
-            <v-btn color="primary">Details</v-btn>
+            <v-btn color="primary" @click="showDetails(product)">Details</v-btn>
             <v-btn color="success" @click="addToCart(product)">Buy</v-btn>
           </v-card-actions>
         </v-card>
@@ -129,4 +138,24 @@ const addToCart = product => {
       </v-btn>
     </div>
   </v-container>
+
+  <!-- Product Details Modal -->
+  <v-dialog v-model="showModal" max-width="500">
+    <v-card>
+      <v-card-title>
+        {{ selectedProduct?.name }}
+      </v-card-title>
+      <v-card-subtitle>
+        Description: {{ selectedProduct?.description }}
+      </v-card-subtitle>
+      <v-card-text>
+        <p><strong>Price:</strong> ${{ selectedProduct?.price }}</p>
+        <p><strong>Stocks:</strong> {{ selectedProduct?.stock }}</p>
+        <p><strong>Rating:</strong> {{ selectedProduct?.rating }}</p>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="showModal = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
