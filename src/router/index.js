@@ -9,8 +9,7 @@ import { supabase } from '@/utils/supabase.js'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
-        {
+    {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
@@ -24,17 +23,20 @@ const router = createRouter({
           // If no session exists, redirect to login
           next('/login')
         }
-      }
+      },
     },
     {
       path: '/',
       name: 'home',
       component: HomeView,
       beforeEnter: async (to, from, next) => {
+        // Check if the user is logged in
         const { data } = await supabase.auth.getSession()
+        // If a session exists, allow access to the home view
         if (data.session) {
           next()
         } else {
+          // If no session exists, allow access to the home view
           next()
         }
       },
@@ -44,7 +46,9 @@ const router = createRouter({
       name: 'login',
       component: LoginView,
       beforeEnter: async (to, from, next) => {
+        // Check if the user is logged in
         const { data } = await supabase.auth.getSession()
+        // If a session exists, redirect to home
         if (data.session) {
           next('/')
         } else {
@@ -57,7 +61,9 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       beforeEnter: async (to, from, next) => {
+        // Check if the user is logged in
         const { data } = await supabase.auth.getSession()
+        // If a session exists, redirect to home
         if (data.session) {
           next('/')
         } else {
@@ -76,7 +82,7 @@ const router = createRouter({
         } else {
           next('/login')
         }
-      }
+      },
     },
     {
       path: '/product',
@@ -89,10 +95,9 @@ const router = createRouter({
         } else {
           next('/login')
         }
-      }
-    }
+      },
+    },
   ],
 })
 
 export default router
-

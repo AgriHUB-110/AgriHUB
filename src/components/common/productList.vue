@@ -59,7 +59,7 @@ onMounted(() => {
 })
 
 // Function to add product to cart and navigate to cart page
-const addToCart = (product) => {
+const addToCart = product => {
   cart.value.push(product)
   console.log('Product added to cart:', product)
   router.push('/cart') // Navigate to cart page
@@ -98,6 +98,7 @@ const addToCart = (product) => {
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
           <v-card-actions>
             <v-btn color="primary">Details</v-btn>
+            <v-btn color="success" @click="addToCart(product)">Buy</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

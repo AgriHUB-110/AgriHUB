@@ -1,5 +1,15 @@
 <script setup>
-import { modals, showModal, closeModal, handleLogout, formData, formAction, getCurrentUserId, submitProduct, resetForm } from '@/utils/ProfileView.js'
+import {
+  modals,
+  showModal,
+  closeModal,
+  handleLogout,
+  formData,
+  formAction,
+  getCurrentUserId,
+  submitProduct,
+  resetForm,
+} from '@/utils/ProfileView.js'
 import { useRouter } from 'vue-router'
 import headerAH from '@/components/common/headerAH.vue'
 import userProfile from '@/components/common/userProfile.vue'
@@ -9,7 +19,6 @@ import notif from '@/components/common/notif.vue'
 // Logout function
 const router = useRouter()
 const logout = () => handleLogout(router)
-
 </script>
 
 <style scoped>
@@ -68,38 +77,37 @@ const logout = () => handleLogout(router)
                 <v-list-item-title>Add Products</v-list-item-title>
               </v-list-item>
 
-                <!-- My products -->
-                <v-list-item @click="showModal('myProducts')">
-                  <v-list-item-icon>
-                    <v-icon class="mdi mdi-package"></v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>My Products</v-list-item-title>
-                </v-list-item>
+              <!-- My products -->
+              <v-list-item @click="showModal('myProducts')">
+                <v-list-item-icon>
+                  <v-icon class="mdi mdi-package"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>My Products</v-list-item-title>
+              </v-list-item>
 
-
-                <!-- Payment Method -->
-                <v-list-item @click="showModal('paymentMethod')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-credit-card</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Payment Method</v-list-item-title>
-                </v-list-item>
-                <!-- Oder tracking -->
-                <v-list-item @click="showModal('orderTracking')">
-                  <v-list-item-icon>
-                    <v-icon>mdi-truck-delivery</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title>Order Tracking</v-list-item-title>
-                </v-list-item>
-                <!-- Wishlist -->
-                <!-- ! add in the future... -->
-                <!-- <v-list-item @click="showModal('wishlist')">
+              <!-- Payment Method -->
+              <v-list-item @click="showModal('paymentMethod')">
+                <v-list-item-icon>
+                  <v-icon>mdi-credit-card</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Payment Method</v-list-item-title>
+              </v-list-item>
+              <!-- Oder tracking -->
+              <v-list-item @click="showModal('orderTracking')">
+                <v-list-item-icon>
+                  <v-icon>mdi-truck-delivery</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Order Tracking</v-list-item-title>
+              </v-list-item>
+              <!-- Wishlist -->
+              <!-- ! add in the future... -->
+              <!-- <v-list-item @click="showModal('wishlist')">
                   <v-list-item-icon>
                     <v-icon>mdi-heart</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title>Wishlist</v-list-item-title>
                 </v-list-item> -->
-              </v-list>
+            </v-list>
 
             <!-- Logout Button -->
             <v-btn color="error" @click="handleLogout" class="mt-4">
@@ -128,19 +136,19 @@ const logout = () => handleLogout(router)
         </v-card>
       </v-dialog>
 
-        <!-- My Orders Modal -->
-        <v-dialog v-model="modals.myOrders" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>My Orders</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('myOrders')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> My Orders content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- My Orders Modal -->
+      <v-dialog v-model="modals.myOrders" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>My Orders</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('myOrders')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> My Orders content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <!-- Add Product Modal -->
       <v-dialog v-model="modals.addProduct" max-width="600">
@@ -191,21 +199,19 @@ const logout = () => handleLogout(router)
         </v-card>
       </v-dialog>
 
-        <!-- My  products  -->
-        <v-dialog v-model="modals.myProducts" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>My Products</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('myProducts')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Buy Products content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
-
-
+      <!-- My  products  -->
+      <v-dialog v-model="modals.myProducts" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>My Products</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('myProducts')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> Buy Products content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <!-- Payment Method Modal -->
       <v-dialog v-model="modals.paymentMethod" max-width="600">
@@ -275,19 +281,19 @@ const logout = () => handleLogout(router)
         </v-card>
       </v-dialog>
 
-        <!-- Order Tracking Modal -->
-        <v-dialog v-model="modals.orderTracking" max-width="600">
-          <v-card>
-            <v-toolbar flat>
-              <v-toolbar-title>Order Tracking</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn icon @click="closeModal('orderTracking')">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-card-text> Order Tracking content goes here. </v-card-text>
-          </v-card>
-        </v-dialog>
+      <!-- Order Tracking Modal -->
+      <v-dialog v-model="modals.orderTracking" max-width="600">
+        <v-card>
+          <v-toolbar flat>
+            <v-toolbar-title>Order Tracking</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon @click="closeModal('orderTracking')">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text> Order Tracking content goes here. </v-card-text>
+        </v-card>
+      </v-dialog>
 
       <!-- Wishlist Modal -->
       <v-dialog v-model="modals.wishlist" max-width="600">
