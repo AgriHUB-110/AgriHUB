@@ -23,16 +23,6 @@ export const closeModal = modal => {
   modals.value[modal] = false
 }
 
-export const handleLogout = async () => {
-  const router = useRouter()
-  try {
-    await onLogout() // Call the logout function
-    router.push('/') // Redirect to HomeView.vue after logout
-  } catch (error) {
-    console.error('Logout failed:', error)
-  }
-}
-
 // Reactive references for form data
 export const formData = ref({
   name: '',
