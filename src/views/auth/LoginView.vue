@@ -22,14 +22,7 @@ const formAction = reactive({
   ...formActionDefault,
 })
 
-// Function to check user session
-const checkSession = async () => {
-  const { data } = await supabase.auth.getSession()
-  if (data.session) {
-    // If session exists, redirect to /Home
-    // router.replace('/')
-  }
-}
+
 
 // Function to handle login process
 const onLogin = async () => {
@@ -63,7 +56,6 @@ const onFormSubmit = () => {
 
 // Check session on component mount
 onMounted(() => {
-  checkSession()
 })
 </script>
 
