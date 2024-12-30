@@ -1,9 +1,8 @@
 // utils/ProfileView.js
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase.js'
 import { formActionDefault } from '@/utils/supabase.js'
-
+import { getCurrentUserId } from './common_functions.js'
 // Modal visibility states
 export const modals = ref({
   myOrders: false,
@@ -33,40 +32,6 @@ export const formData = ref({
 })
 
 export const formAction = ref({ ...formActionDefault })
-
-// Retrieve user table ID
-export const getCurrentUserId = async () => {
-  try {
-    const { data: authData, error: authError } = await supabase.auth.getUser()
-
-    if (authError) {
-      console.error('Error retrieving authenticated user:', authError.message)
-      return null
-    }
-
-    const authUserId = authData?.user?.id
-    if (!authUserId) {
-      console.warn('No authenticated user found.')
-      return null
-    }
-
-    const { data: userData, error: userError } = await supabase
-      .from('User')
-      .select('id')
-      .eq('user_id', authUserId)
-      .single()
-
-    if (userError) {
-      console.error('Error retrieving user table ID:', userError.message)
-      return null
-    }
-    console.log('User Table ID:', userData.id)
-    return userData.id
-  } catch (err) {
-    console.error('Unexpected error:', err)
-    return null
-  }
-}
 
 // Reactive reference for products
 export const products = ref([])

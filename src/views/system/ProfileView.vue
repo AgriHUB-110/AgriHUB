@@ -6,22 +6,20 @@ import {
   closeModal,
   formData,
   formAction,
-  getCurrentUserId,
   submitProduct,
   resetForm,
   getSellerProducts,
   products,
 } from '@/utils/ProfileView.js'
-import { onLogout as handleLogout } from '@/utils/HomeView.js' // Import the logout function from HomeView.js
 import { useRouter } from 'vue-router'
 import headerAH from '@/components/common/headerAH.vue'
 import UserProfile from '@/components/common/userProfile.vue'
 import { requiredValidator, integerValidator } from '@/utils/validator.js'
 import notif from '@/components/common/notif.vue'
+import { onLogout as handleLogout } from '@/utils/common_functions.js'
 
 // Logout function
 const router = useRouter()
-const logout = () => handleLogout(router)
 
 // Load seller products when component is mounted
 onMounted(async () => {

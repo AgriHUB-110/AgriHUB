@@ -4,10 +4,9 @@ import { useRouter } from 'vue-router'
 import {
   useHomeView,
   userEmail,
-  isLoggedIn as userIsLoggedIn,
-  onLogout as handleLogout,
 } from '@/utils/HomeView.js'
 
+import { onLogout as handleLogout,  isLoggedIn as userIsLoggedIn } from '@/utils/common_functions.js'
 const drawer = ref(false)
 const theme = ref('light')
 const router = useRouter()

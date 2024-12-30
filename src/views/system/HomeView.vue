@@ -1,17 +1,13 @@
 <script setup>
-import {
-  useHomeView,
-  userEmail,
-  isLoggedIn,
-  onLogout,
-} from '@/utils/HomeView.js'
+import { useHomeView, userEmail } from '@/utils/HomeView.js'
+
+import { onLogout ,  isLoggedIn } from '@/utils/common_functions.js'
 import { useRouter } from 'vue-router'
 import productList from '@/components/common/productList.vue'
 import headerAH from '@/components/common/headerAH.vue'
 
 useHomeView() // Initialize the setup
 const router = useRouter()
-
 </script>
 
 <style scoped>
