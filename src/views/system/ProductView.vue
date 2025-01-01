@@ -6,7 +6,7 @@ import { getCurrentUserId } from '@/utils/common_functions.js';
 
 const cart = ref([]); // Reactive array to store cart items
 
-// Fetch products in the cart based on cart_id
+// Fetch products in the cart based on cart_id array
 const fetchCartProducts = async () => {
   try {
     const userId = await getCurrentUserId();
@@ -15,10 +15,10 @@ const fetchCartProducts = async () => {
       return;
     }
 
-    // Fetch the cart_id from the User table
+    // Fetch the cart_id (as an array) from the User table
     const { data: userData, error: userError } = await supabase
       .from('User')
-      .select('cart_id')
+      .select('cart_id') // cart_id should be an array column
       .eq('id', userId)
       .single();
 
@@ -27,17 +27,17 @@ const fetchCartProducts = async () => {
       return;
     }
 
-    const cartId = userData?.cart_id;
-    if (!cartId) {
-      console.warn('No cart_id found for this user.');
+    const cartIds = userData?.cart_id || [];
+    if (cartIds.length === 0) {
+      console.warn('No products in the cart.');
       return;
     }
 
-    // Fetch product details using the cart_id
+    // Fetch products in the cart using the cart_ids
     const { data: cartData, error: cartError } = await supabase
       .from('Product')
       .select('product_id, name, description, price, stock')
-      .eq('product_id', cartId);
+      .in('product_id', cartIds); // Fetch products whose IDs are in cartIds array
 
     if (cartError) {
       console.error('Error fetching cart products:', cartError.message);
@@ -50,7 +50,7 @@ const fetchCartProducts = async () => {
   }
 };
 
-// Remove a product from the cart
+// Remove a product from the cart (removing product_id from cart_id array)
 const removeFromCart = async (productId) => {
   try {
     const userId = await getCurrentUserId();
@@ -71,20 +71,15 @@ const removeFromCart = async (productId) => {
       return;
     }
 
-    let cartId = userData?.cart_id;
+    let cartIds = userData?.cart_id || [];
 
-    // Remove the product ID from cart_id
-    if (cartId === productId) {
-      cartId = null; // If it's a single product cart, clear the cart
-    } else {
-      console.warn('Product not in cart.');
-      return;
-    }
+    // Remove the product ID from cart_id array
+    cartIds = cartIds.filter((id) => id !== productId);
 
-    // Update the User table with the updated cart_id
+    // Update the User table with the updated cart_id array
     const { error: updateError } = await supabase
       .from('User')
-      .update({ cart_id: cartId })
+      .update({ cart_id: cartIds })
       .eq('id', userId);
 
     if (updateError) {
@@ -92,7 +87,7 @@ const removeFromCart = async (productId) => {
       return;
     }
 
-    // Update the cart array locally
+    // Update the cart array locally by removing the product
     cart.value = cart.value.filter((item) => item.product_id !== productId);
     console.log('Product removed from cart:', productId);
   } catch (err) {

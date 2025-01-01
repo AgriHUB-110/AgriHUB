@@ -78,18 +78,37 @@ const addToCart = async product => {
       return
     }
 
-    const { error } = await supabase
+    // Fetch the current cart_ids from the User table
+    const { data: userData, error: userError } = await supabase
       .from('User')
-      .update({ cart_id: product.product_id }) // Update the cart_id column with product_id
-      .eq('id', userId) // Match the user by ID
+      .select('cart_id') // Assume cart_id is an array
+      .eq('id', userId)
+      .single()
 
-    if (error) {
-      console.error('Error updating cart:', error.message)
+    if (userError) {
+      console.error('Error fetching cart_ids:', userError.message)
+      return
+    }
+
+    let cartIds = userData?.cart_id || []
+
+    // Add the product ID to the cart_ids array if not already added
+    if (!cartIds.includes(product.product_id)) {
+      cartIds.push(product.product_id) // Add product to the cart array
+    }
+
+    // Update the User table with the updated cart_ids array
+    const { error: updateError } = await supabase
+      .from('User')
+      .update({ cart_id: cartIds })
+      .eq('id', userId)
+
+    if (updateError) {
+      console.error('Error updating cart:', updateError.message)
       return
     }
 
     console.log('Product added to cart:', product)
-    // router.push('/cart') // Navigate to the cart page
   } catch (err) {
     console.error('Unexpected error:', err)
   }
