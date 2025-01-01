@@ -8,7 +8,7 @@ import {
 
 import { onLogout as handleLogout,  isLoggedIn as userIsLoggedIn } from '@/utils/common_functions.js'
 const drawer = ref(false)
-const theme = ref('light')
+const theme = ref('')
 const router = useRouter()
 const isLoggedIn = userIsLoggedIn // Use the imported isLoggedIn function
 useHomeView() // Initialize the setup

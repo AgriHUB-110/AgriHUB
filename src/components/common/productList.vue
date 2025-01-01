@@ -2,7 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase.js'
-
+import { getCurrentUserId } from '@/utils/common_functions'
 const router = useRouter()
 const products = ref([]) // Reactive array to store products
 const page = ref(1) // Current page
@@ -24,7 +24,9 @@ const fetchProducts = async () => {
     // Build the query with optional search filtering
     let query = supabase
       .from('Product')
-      .select('product_id, name, description, price, stock, rating', { count: 'exact' }) // Include necessary fields
+      .select('product_id, name, description, price, stock, rating', {
+        count: 'exact',
+      }) // Include necessary fields
       .range((page.value - 1) * perPage.value, page.value * perPage.value - 1) // Range for pagination
 
     if (search.value) {
@@ -60,17 +62,37 @@ onMounted(() => {
   fetchProducts()
 })
 
-// Function to add product to cart and navigate to cart page
-const addToCart = product => {
-  cart.value.push(product)
-  console.log('Product added to cart:', product)
-  router.push('/cart') // Navigate to cart page
-}
-
 // Function to show product details in a modal
-const showDetails = (product) => {
+const showDetails = product => {
   selectedProduct.value = product // Set the selected product
   showModal.value = true // Open the modal
+}
+
+// Function to add product to cart and navigate to cart page
+
+const addToCart = async product => {
+  try {
+    const userId = await getCurrentUserId() // Get the current user ID
+    if (!userId) {
+      console.warn('Unable to add to cart. No user ID found.')
+      return
+    }
+
+    const { error } = await supabase
+      .from('User')
+      .update({ cart_id: product.product_id }) // Update the cart_id column with product_id
+      .eq('id', userId) // Match the user by ID
+
+    if (error) {
+      console.error('Error updating cart:', error.message)
+      return
+    }
+
+    console.log('Product added to cart:', product)
+    // router.push('/cart') // Navigate to the cart page
+  } catch (err) {
+    console.error('Unexpected error:', err)
+  }
 }
 </script>
 
