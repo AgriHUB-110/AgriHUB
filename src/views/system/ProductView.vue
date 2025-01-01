@@ -149,7 +149,6 @@ onMounted(() => {
         <v-row>
           <v-col v-for="item in cart" :key="item.product_id" cols="12" sm="6" md="4">
             <v-card class="mx-auto my-3" max-width="400">
-              <v-img :src="item.image" alt="Product image" height="200px"></v-img>
               <v-card-title class="text-h6">{{ item.name }}</v-card-title>
               <v-card-subtitle class="text-body-2 text-muted">
                 {{ item.description }}

@@ -76,3 +76,37 @@ body {
 .v-list-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
+.v-btn {
+  background-color: #4caf50; /* Green button */
+  color: white;
+}
+
+.v-btn:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.v-dialog {
+  background-color: #ffffff;
+}
+
+.v-card {
+  background-color: #f4f9f4; /* Light greenish card background */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.v-card-title {
+  color: #3b6d3f; /* Dark green text for titles */
+}
+
+.v-card-subtitle,
+.v-card-text {
+  color: #555555; /* Muted text */
+}
+
+.v-divider {
+  border-color: #b8e0a3; /* Subtle green divider */
+}
+
+.v-icon {
+  color: #4caf50; /* Green color for icons */
+}
