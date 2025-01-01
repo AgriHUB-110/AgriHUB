@@ -155,7 +155,7 @@ const addToCart = async product => {
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
           <v-card-actions>
             <v-btn color="primary" @click="showDetails(product)">Details</v-btn>
-            <v-btn color="success" @click="addToCart(product)">Buy</v-btn>
+            <v-btn color="success" @click="addToCart(product)">Add to Cart</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
