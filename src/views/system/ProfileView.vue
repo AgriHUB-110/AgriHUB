@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   modals,
   showModal,
@@ -20,9 +20,16 @@ import { onLogout as handleLogout } from '@/utils/common_functions.js'
 
 // Logout function
 const router = useRouter()
+const userType = ref('')
+
+const checkUserType = () => {
+  const storedUserType = localStorage.getItem('user_type')
+  userType.value = storedUserType || '' // Set the user type from localStorage
+}
 
 // Load seller products when component is mounted
 onMounted(async () => {
+  checkUserType()
   await getSellerProducts()
 })
 </script>
@@ -71,7 +78,10 @@ onMounted(async () => {
                     </v-list-item>
 
                     <!-- Add products -->
-                    <v-list-item @click="showModal('addProduct')">
+                    <v-list-item
+                      v-if="userType !== 'Buyer'"
+                      @click="showModal('addProduct')"
+                    >
                       <v-list-item-icon>
                         <v-icon class="mdi mdi-archive-plus-outline"></v-icon>
                       </v-list-item-icon>
@@ -81,7 +91,10 @@ onMounted(async () => {
                     </v-list-item>
 
                     <!-- My products -->
-                    <v-list-item @click="showModal('myProducts')">
+                    <v-list-item
+                      v-if="userType !== 'Buyer'"
+                      @click="showModal('myProducts')"
+                    >
                       <v-list-item-icon>
                         <v-icon class="mdi mdi-package"></v-icon>
                       </v-list-item-icon>

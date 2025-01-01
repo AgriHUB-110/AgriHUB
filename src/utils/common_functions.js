@@ -22,7 +22,7 @@ export const getCurrentUserId = async () => {
 
     const { data: userData, error: userError } = await supabase
       .from('User')
-      .select('id')
+      .select('id, user_type')
       .eq('user_id', authUserId)
       .single()
 
@@ -31,6 +31,11 @@ export const getCurrentUserId = async () => {
       return null
     }
     console.log('User Table ID:', userData.id)
+    console.log('User Type:', userData.user_type) 
+
+     // Store user type in localStorage
+     localStorage.setItem('user_type', userData.user_type)
+
     return userData.id
   } catch (err) {
     console.error('Unexpected error:', err)
