@@ -1,17 +1,19 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHomeView, userEmail } from '@/utils/HomeView.js'
 import {
-  useHomeView,
-  userEmail,
-} from '@/utils/HomeView.js'
+  onLogout as handleLogout,
+  isLoggedIn as userIsLoggedIn,
+} from '@/utils/common_functions.js'
 
-import { onLogout as handleLogout,  isLoggedIn as userIsLoggedIn } from '@/utils/common_functions.js'
 const drawer = ref(false)
-const theme = ref('')
+const theme = ref('') // Declare the theme as a ref
 const router = useRouter()
 const isLoggedIn = userIsLoggedIn // Use the imported isLoggedIn function
-useHomeView() // Initialize the setup
+
+// Initialize the setup
+useHomeView()
 
 const items = ref([
   { title: 'About', value: 'about' },
@@ -24,9 +26,28 @@ const items = ref([
 const showAboutModal = ref(false)
 const showInsightsModal = ref(false)
 
+// Toggle the theme
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light'
+  localStorage.setItem('theme', theme.value) // Save the theme to localStorage
 }
+
+// Apply theme from localStorage when the component is mounted
+onMounted(() => {
+  const savedTheme = localStorage.getItem('theme') // Get the saved theme from localStorage
+  if (savedTheme) {
+    theme.value = savedTheme // Apply the saved theme
+  } else {
+    theme.value = 'light' // Default to light if no theme is saved
+  }
+})
+
+// Main background class based on theme
+const mainBackgroundClass = computed(() => {
+  return theme.value === 'light'
+    ? 'main-light-background'
+    : 'main-dark-background'
+})
 
 const navigate = path => {
   // Implement navigation logic
@@ -37,12 +58,6 @@ const onLogout = () => {
   handleLogout()
   console.log('Logging out')
 }
-
-const mainBackgroundClass = computed(() => {
-  return theme.value === 'light'
-    ? 'main-light-background'
-    : 'main-dark-background'
-})
 </script>
 
 <template>
