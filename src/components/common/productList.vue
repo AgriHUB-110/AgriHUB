@@ -3,13 +3,14 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabase.js'
 import { getCurrentUserId } from '@/utils/common_functions'
+
 const router = useRouter()
 const products = ref([]) // Reactive array to store products
 const page = ref(1) // Current page
 const perPage = ref(9) // Products per page
 const total = ref(0) // Total products count
 const search = ref('') // Search term
-const cart = ref([]) // Cart array to store selected products
+const cart = ref([]) // Cart array to store selected products (2D array: [[product_id, quantity]])
 const selectedProduct = ref(null) // Selected product for modal
 const showModal = ref(false) // Modal visibility
 
@@ -21,16 +22,12 @@ const end = computed(() => Math.min(page.value * perPage.value, total.value))
 // Fetch products from the Supabase database
 const fetchProducts = async () => {
   try {
-    // Build the query with optional search filtering
     let query = supabase
       .from('Product')
-      .select('product_id, name, description, price, stock, rating', {
-        count: 'exact',
-      }) // Include necessary fields
-      .range((page.value - 1) * perPage.value, page.value * perPage.value - 1) // Range for pagination
+      .select('product_id, name, description, price, stock, rating', { count: 'exact' })
+      .range((page.value - 1) * perPage.value, page.value * perPage.value - 1)
 
     if (search.value) {
-      // Apply a search filter if the search term is not empty
       query = query.ilike('name', `%${search.value}%`)
     }
 
@@ -41,8 +38,8 @@ const fetchProducts = async () => {
       return
     }
 
-    products.value = data || [] // Update products
-    total.value = count || 0 // Update total count
+    products.value = data || []
+    total.value = count || 0
   } catch (err) {
     console.error('Unexpected error:', err)
   }
@@ -53,7 +50,7 @@ watch(page, fetchProducts)
 
 // Watch for changes in the search term and fetch products
 watch(search, () => {
-  page.value = 1 // Reset to the first page on search
+  page.value = 1
   fetchProducts()
 })
 
@@ -64,32 +61,61 @@ onMounted(() => {
 
 // Function to show product details in a modal
 const showDetails = product => {
-  selectedProduct.value = product // Set the selected product
-  showModal.value = true // Open the modal
+  selectedProduct.value = product
+  showModal.value = true
 }
 
 // Function to add product to cart and navigate to cart page
-
 const addToCart = async product => {
   try {
-    const userId = await getCurrentUserId() // Get the current user ID
+    const userId = await getCurrentUserId()
     if (!userId) {
       console.warn('Unable to add to cart. No user ID found.')
       return
     }
 
-    const { error } = await supabase
+    // Fetch the current cart_ids from the User table
+    const { data: userData, error: userError } = await supabase
       .from('User')
-      .update({ cart_id: product.product_id }) // Update the cart_id column with product_id
-      .eq('id', userId) // Match the user by ID
+      .select('cart_id')
+      .eq('id', userId)
+      .single()
 
-    if (error) {
-      console.error('Error updating cart:', error.message)
+    if (userError) {
+      console.error('Error fetching cart_ids:', userError.message)
+      return
+    }
+
+    let cartIds = userData?.cart_id || []
+
+    // Check if the product already exists in the cart
+    let productFound = false
+    for (let i = 0; i < cartIds.length; i++) {
+      if (cartIds[i][0] === product.product_id) {
+        // If product is already in cart, update the quantity
+        cartIds[i][1] += 1
+        productFound = true
+        break
+      }
+    }
+
+    // If the product is not in the cart, add it with quantity 1
+    if (!productFound) {
+      cartIds.push([product.product_id, 1])
+    }
+
+    // Update the User table with the updated cart_ids (2D array)
+    const { error: updateError } = await supabase
+      .from('User')
+      .update({ cart_id: cartIds })
+      .eq('id', userId)
+
+    if (updateError) {
+      console.error('Error updating cart:', updateError.message)
       return
     }
 
     console.log('Product added to cart:', product)
-    // router.push('/cart') // Navigate to the cart page
   } catch (err) {
     console.error('Unexpected error:', err)
   }
@@ -119,7 +145,7 @@ const addToCart = async product => {
     <v-row>
       <v-col
         v-for="product in products"
-        :key="product.id"
+        :key="product.product_id"
         cols="12"
         sm="6"
         md="4"
@@ -129,7 +155,7 @@ const addToCart = async product => {
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
           <v-card-actions>
             <v-btn color="primary" @click="showDetails(product)">Details</v-btn>
-            <v-btn color="success" @click="addToCart(product)">Buy</v-btn>
+            <v-btn color="success" @click="addToCart(product)">Add to Cart</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
