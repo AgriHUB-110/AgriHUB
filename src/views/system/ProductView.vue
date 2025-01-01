@@ -1,18 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { supabase } from '@/utils/supabase.js';
 import headerAH from '@/components/common/headerAH.vue';
 import { getCurrentUserId } from '@/utils/common_functions.js';
+import { mdiCart, mdiCreditCard, mdiDelete } from '@mdi/js'; // Import Material Design Icons
 
-// Cart stores the products and quantities (2D array)
+const router = useRouter();
 const cart = ref([]);
-
-// Variable to store the quantity to remove when prompted
 const removeQuantity = ref(1);
 const removeDialog = ref(false);
-const selectedProduct = ref(null); // Selected product for removal
+const selectedProduct = ref(null);
+const checkoutDialog = ref(false);
+const shippingAddress = ref('');
+const selectedPaymentMethod = ref('credit');
 
-// Fetch products in the cart based on cart_id array
 const fetchCartProducts = async () => {
   try {
     const userId = await getCurrentUserId();
@@ -21,10 +23,9 @@ const fetchCartProducts = async () => {
       return;
     }
 
-    // Fetch the cart_id (as an array) from the User table
     const { data: userData, error: userError } = await supabase
       .from('User')
-      .select('cart_id') // cart_id should be an array column
+      .select('cart_id')
       .eq('id', userId)
       .single();
 
@@ -39,46 +40,35 @@ const fetchCartProducts = async () => {
       return;
     }
 
-    // Fetch products in the cart using the cart_ids
     const { data: cartData, error: cartError } = await supabase
       .from('Product')
       .select('product_id, name, description, price, stock')
-      .in('product_id', cartIds); // Fetch products whose IDs are in cartIds array
+      .in('product_id', cartIds);
 
     if (cartError) {
       console.error('Error fetching cart products:', cartError.message);
       return;
     }
 
-    // Map cart data with quantities stored in cart_ids (2D array structure)
     cart.value = cartData.map(product => {
       const quantity = cartIds.find(item => item[0] === product.product_id)?.[1] || 1;
       return { ...product, quantity };
-    }).filter(item => item.quantity > 0); // Filter out items with 0 quantity
-
+    }).filter(item => item.quantity > 0);
   } catch (err) {
     console.error('Unexpected error:', err);
   }
 };
 
-
-// Remove a product from the cart (decrease quantity or remove entirely)
 const removeFromCart = async (product, quantity) => {
-  try {
-    // If quantity is more than 1, ask for confirmation
-    if (quantity > 1) {
-      selectedProduct.value = product;
-      removeDialog.value = true;
-    } else {
-      await updateCart(product.product_id, 1); // Directly remove if quantity is 1
-      removeDialog.value = false; // Close dialog after removing product
-    }
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  if (quantity > 1) {
+    selectedProduct.value = product;
+    removeDialog.value = true;
+  } else {
+    await updateCart(product.product_id, 1);
+    removeDialog.value = false;
   }
 };
 
-// Update the cart: subtract quantity or remove product entirely
 const updateCart = async (productId, quantityToRemove) => {
   try {
     const userId = await getCurrentUserId();
@@ -87,7 +77,6 @@ const updateCart = async (productId, quantityToRemove) => {
       return;
     }
 
-    // Fetch current cart_id from the User table
     const { data: userData, error: userError } = await supabase
       .from('User')
       .select('cart_id')
@@ -100,23 +89,18 @@ const updateCart = async (productId, quantityToRemove) => {
     }
 
     let cartIds = userData?.cart_id || [];
-
-    // Find the product in the cart and update the quantity or remove it entirely
     const productIndex = cartIds.findIndex(item => item[0] === productId);
     if (productIndex !== -1) {
       const currentQuantity = cartIds[productIndex][1];
       const newQuantity = currentQuantity - quantityToRemove;
 
       if (newQuantity > 0) {
-        // Update quantity if it's more than 0
         cartIds[productIndex][1] = newQuantity;
       } else {
-        // Remove product if quantity is 0 or less
         cartIds.splice(productIndex, 1);
       }
     }
 
-    // Update the User table with the updated cart_id array
     const { error: updateError } = await supabase
       .from('User')
       .update({ cart_id: cartIds })
@@ -127,9 +111,8 @@ const updateCart = async (productId, quantityToRemove) => {
       return;
     }
 
-    // Update the cart array locally by modifying the quantity or removing the product
     if (quantityToRemove === selectedProduct.value.quantity) {
-      cart.value = cart.value.filter(item => item.product_id !== productId); // Remove product entirely
+      cart.value = cart.value.filter(item => item.product_id !== productId);
     } else {
       const product = cart.value.find(item => item.product_id === productId);
       if (product) {
@@ -137,18 +120,22 @@ const updateCart = async (productId, quantityToRemove) => {
       }
     }
 
-    // Filter out items with quantity 0
     cart.value = cart.value.filter(item => item.quantity > 0);
-
-    console.log('Product quantity updated in cart:', productId);
-    removeDialog.value = false; // Close dialog after successful update
+    removeDialog.value = false;
   } catch (err) {
     console.error('Unexpected error:', err);
   }
 };
 
+const goToCheckout = () => {
+  checkoutDialog.value = true;
+};
 
-// Fetch cart products when the component is mounted
+const placeOrder = () => {
+  console.log('Order placed with address:', shippingAddress.value);
+  router.push({ name: 'OrderConfirmationPage' });
+};
+
 onMounted(() => {
   fetchCartProducts();
 });
@@ -161,7 +148,8 @@ onMounted(() => {
         <h1 class="text-center mb-5">Your Cart</h1>
         <v-row>
           <v-col v-for="item in cart" :key="item.product_id" cols="12" sm="6" md="4">
-            <v-card class="mx-auto" max-width="400">
+            <v-card class="mx-auto my-3" max-width="400">
+              <v-img :src="item.image" alt="Product image" height="200px"></v-img>
               <v-card-title class="text-h6">{{ item.name }}</v-card-title>
               <v-card-subtitle class="text-body-2 text-muted">
                 {{ item.description }}
@@ -173,10 +161,10 @@ onMounted(() => {
               </v-card-text>
               <v-card-actions>
                 <v-btn color="error" @click="removeFromCart(item, item.quantity)">
-                  Remove
+                  <v-icon left>{{ mdiDelete }}</v-icon> Remove
                 </v-btn>
-                <v-btn color="success">
-                  Checkout
+                <v-btn color="success" @click="goToCheckout">
+                  <v-icon left>{{ mdiCart }}</v-icon> Checkout
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -186,10 +174,59 @@ onMounted(() => {
     </template>
   </headerAH>
 
-  <!-- Prompt dialog for quantity removal -->
+  <!-- Checkout Modal -->
+  <v-dialog v-model="checkoutDialog" max-width="800">
+    <v-card>
+      <v-card-title class="text-h6"><v-icon left>{{ mdiCreditCard }}</v-icon> Checkout</v-card-title>
+      <v-card-text>
+        <v-form>
+          <v-text-field
+            v-model="shippingAddress"
+            label="Shipping Address"
+            required
+          ></v-text-field>
+
+          <v-select
+            v-model="selectedPaymentMethod"
+            :items="['credit', 'debit', 'paypal']"
+            label="Payment Method"
+            required
+          ></v-select>
+
+          <v-divider></v-divider>
+
+          <v-row>
+            <v-col v-for="item in cart" :key="item.product_id" cols="12">
+              <v-card class="mx-auto my-3" max-width="600">
+                <v-img :src="item.image" alt="Product image" height="200px"></v-img>
+                <v-card-title class="text-h6">{{ item.name }}</v-card-title>
+                <v-card-text>
+                  <p><strong>Price:</strong> ${{ item.price }}</p>
+                  <p><strong>Stock:</strong> {{ item.stock }}</p>
+                  <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+       <v-btn text @click="checkoutDialog = false" prepend-icon="mdi-close">
+  Cancel
+</v-btn>
+
+        <v-btn color="primary" @click="placeOrder" prepend-icon="mdi-cart">
+  Place Order
+</v-btn>
+
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Remove Quantity Dialog -->
   <v-dialog v-model="removeDialog" max-width="400">
     <v-card>
-      <v-card-title class="text-h6">Remove Quantity</v-card-title>
+      <v-card-title class="text-h6"><v-icon left>{{ mdiDelete }}</v-icon> Remove Quantity</v-card-title>
       <v-card-text>
         <v-text-field
           v-model="removeQuantity"
