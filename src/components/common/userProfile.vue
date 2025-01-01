@@ -56,7 +56,6 @@ onMounted(() => {
 <template>
   <v-container>
     <v-card>
-      <v-card-title>User Profile</v-card-title>
       <v-card-text v-if="user && !isEditing">
         <v-list>
           <!-- First name -->
