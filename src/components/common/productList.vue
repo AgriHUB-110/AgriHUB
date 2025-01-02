@@ -1,30 +1,31 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { supabase } from '@/utils/supabase.js'
 import { getCurrentUserId } from '@/utils/common_functions'
-
-const router = useRouter()
-const products = ref([]) // Reactive array to store products
-const page = ref(1) // Current page
-const perPage = ref(9) // Products per page
-const total = ref(0) // Total products count
-const search = ref('') // Search term
-const cart = ref([]) // Cart array to store selected products (2D array: [[product_id, quantity]])
-const selectedProduct = ref(null) // Selected product for modal
-const showModal = ref(false) // Modal visibility
+import { formActionDefault } from '@/utils/supabase.js'
+const products = ref([])
+const page = ref(1)
+const perPage = ref(9)
+const total = ref(0)
+const search = ref('')
+const selectedProduct = ref(null)
+const showAddToCartModal = ref(false)
+const addQuantity = ref(1) // Quantity to add
+const errorMessage = ref('')
 
 // Computed properties for pagination
 const totalPages = computed(() => Math.ceil(total.value / perPage.value))
 const start = computed(() => (page.value - 1) * perPage.value + 1)
 const end = computed(() => Math.min(page.value * perPage.value, total.value))
 
-// Fetch products from the Supabase database
+// Fetch products
 const fetchProducts = async () => {
   try {
     let query = supabase
       .from('Product')
-      .select('product_id, name, description, price, stock, rating', { count: 'exact' })
+      .select('product_id, name, description, price, stock, rating', {
+        count: 'exact',
+      })
       .range((page.value - 1) * perPage.value, page.value * perPage.value - 1)
 
     if (search.value) {
@@ -45,77 +46,95 @@ const fetchProducts = async () => {
   }
 }
 
-// Watch for changes in the page number and fetch products
+// Watchers
 watch(page, fetchProducts)
-
-// Watch for changes in the search term and fetch products
 watch(search, () => {
   page.value = 1
   fetchProducts()
 })
 
-// Fetch products when the component is mounted
+// Mounted hook
 onMounted(() => {
   fetchProducts()
 })
 
-// Function to show product details in a modal
-const showDetails = product => {
+// Function to prepare add-to-cart action
+const prepareAddToCart = product => {
   selectedProduct.value = product
-  showModal.value = true
+  addQuantity.value = 1
+  showAddToCartModal.value = true
 }
 
-// Function to add product to cart and navigate to cart page
-const addToCart = async product => {
+// Function to confirm add-to-cart action
+const confirmAddToCart = async () => {
   try {
+    if (
+      addQuantity.value < 1 ||
+      addQuantity.value > selectedProduct.value.stock
+    ) {
+      errorMessage.value = `Invalid quantity. Please ensure it's between 1 and the available stock (${selectedProduct.value.stock}).`
+      console.warn(errorMessage.value)
+      return
+    }
+
     const userId = await getCurrentUserId()
     if (!userId) {
       console.warn('Unable to add to cart. No user ID found.')
       return
     }
 
-    // Fetch the current cart_ids from the User table
-    const { data: userData, error: userError } = await supabase
-      .from('User')
-      .select('cart_id')
-      .eq('id', userId)
-      .single()
+    // Check if the product is already in the cart
+    const { data: cartData, error: cartError } = await supabase
+      .from('cart')
+      .select('id, quantity')
+      .eq('user_id', userId)
+      .eq('product_id', selectedProduct.value.product_id)
+      .maybeSingle()
 
-    if (userError) {
-      console.error('Error fetching cart_ids:', userError.message)
+    if (cartError && cartError.details !== 'Results contain 0 rows') {
+      console.error('Error fetching cart data:', cartError.message)
       return
     }
 
-    let cartIds = userData?.cart_id || []
+    if (cartData) {
+      // Update existing cart item if within stock limit
+      const newQuantity = cartData.quantity + addQuantity.value
+      if (newQuantity > selectedProduct.value.stock) {
+        errorMessage.value = 'Quantity exceeds available stock.'
+        console.warn(errorMessage.value)
+        return
+      }
 
-    // Check if the product already exists in the cart
-    let productFound = false
-    for (let i = 0; i < cartIds.length; i++) {
-      if (cartIds[i][0] === product.product_id) {
-        // If product is already in cart, update the quantity
-        cartIds[i][1] += 1
-        productFound = true
-        break
+      const { error: updateError } = await supabase
+        .from('cart')
+        .update({ quantity: newQuantity })
+        .eq('id', cartData.id)
+
+      if (updateError) {
+        console.error('Error updating cart:', updateError.message)
+        return
+      }
+    } else {
+      // Insert new cart item if none exists
+      const { error: insertError } = await supabase.from('cart').insert({
+        user_id: userId,
+        product_id: selectedProduct.value.product_id,
+        quantity: addQuantity.value,
+      })
+
+      if (insertError) {
+        console.error('Error adding to cart:', insertError.message)
+        return
       }
     }
 
-    // If the product is not in the cart, add it with quantity 1
-    if (!productFound) {
-      cartIds.push([product.product_id, 1])
-    }
-
-    // Update the User table with the updated cart_ids (2D array)
-    const { error: updateError } = await supabase
-      .from('User')
-      .update({ cart_id: cartIds })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Error updating cart:', updateError.message)
-      return
-    }
-
-    console.log('Product added to cart:', product)
+    console.log(
+      'Product added to cart:',
+      selectedProduct.value.name,
+      'Quantity:',
+      addQuantity.value,
+    )
+    showAddToCartModal.value = false
   } catch (err) {
     console.error('Unexpected error:', err)
   }
@@ -123,23 +142,6 @@ const addToCart = async product => {
 </script>
 
 <template>
-  <v-container>
-    <!-- Search Bar -->
-    <v-row class="d-flex justify-center">
-      <v-col cols="12" md="8" class="text-center">
-        <v-text-field
-          class="mb-2 pb-2 mt-2"
-          v-model="search"
-          label="Search...."
-          prepend-inner-icon="mdi-magnify"
-          variant="outlined"
-          hide-details
-          single-line
-        ></v-text-field>
-      </v-col>
-    </v-row>
-  </v-container>
-
   <v-container>
     <!-- Product Cards -->
     <v-row>
@@ -153,56 +155,50 @@ const addToCart = async product => {
         <v-card>
           <v-card-title>{{ product.name }}</v-card-title>
           <v-card-subtitle>{{ product.description }}</v-card-subtitle>
+          <v-card-text>
+            <p><strong>Price:</strong> ${{ product.price }}</p>
+            <p><strong>Stock:</strong> {{ product.stock }}</p>
+            <p><strong>Rating:</strong> {{ product.rating }}</p>
+          </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="showDetails(product)">Details</v-btn>
-            <v-btn color="success" @click="addToCart(product)">Add to Cart</v-btn>
+            <v-btn color="success" @click="prepareAddToCart(product)"
+              >Add to Cart</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Pagination -->
-    <v-pagination v-model="page" :length="totalPages"></v-pagination>
-
-    <!-- Pagination Details -->
-    <div>Showing {{ start }}-{{ end }} of {{ total }} results</div>
-
-    <!-- Navigation Buttons -->
-    <div class="mt-3">
-      <v-btn
-        class="mr-3"
-        :disabled="page === 1"
-        @click="page > 1 && page--"
-        color="secondary"
-      >
-        Previous
-      </v-btn>
-      <v-btn
-        :disabled="page === totalPages"
-        @click="page < totalPages && page++"
-        color="secondary"
-      >
-        Next
-      </v-btn>
-    </div>
   </v-container>
 
-  <!-- Product Details Modal -->
-  <v-dialog v-model="showModal" max-width="500">
+  <!-- Add to Cart Modal -->
+  <v-dialog v-model="showAddToCartModal" max-width="500">
     <v-card>
-      <v-card-title>
-        {{ selectedProduct?.name }}
-      </v-card-title>
+      <v-alert v-if="errorMessage" type="error" dismissible>
+        {{ errorMessage }}
+      </v-alert>
+      <v-card-title>Add to Cart</v-card-title>
       <v-card-subtitle>
-        Description: {{ selectedProduct?.description }}
+        Add quantity for <strong>{{ selectedProduct?.name }}</strong
+        >.
       </v-card-subtitle>
       <v-card-text>
+        <p><strong>Description:</strong> {{ selectedProduct?.description }}</p>
         <p><strong>Price:</strong> ${{ selectedProduct?.price }}</p>
-        <p><strong>Stocks:</strong> {{ selectedProduct?.stock }}</p>
+        <p><strong>Available Stock:</strong> {{ selectedProduct?.stock }}</p>
         <p><strong>Rating:</strong> {{ selectedProduct?.rating }}</p>
+        <v-text-field
+          v-model="addQuantity"
+          type="number"
+          label="Quantity"
+          :max="selectedProduct?.stock"
+          :min="1"
+        ></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" @click="showModal = false">Close</v-btn>
+        <v-btn color="primary" @click="confirmAddToCart">Confirm</v-btn>
+        <v-btn color="secondary" @click="showAddToCartModal = false"
+          >Cancel</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
