@@ -81,6 +81,7 @@ const confirmAddToCart = async () => {
 
     const userId = await getCurrentUserId()
     if (!userId) {
+      errorMessage.value = 'Please Sign in first'
       console.warn('Unable to add to cart. No user ID found.')
       return
     }
