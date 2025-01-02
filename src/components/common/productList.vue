@@ -146,6 +146,19 @@ const confirmAddToCart = async () => {
 
 <template>
   <v-container>
+    <!-- Search Bar -->
+    <v-row>
+      <v-col cols="12">
+        <v-text-field
+          v-model="search"
+          label="Search Products"
+          placeholder="Enter product name..."
+          outlined
+          clearable
+        ></v-text-field>
+      </v-col>
+    </v-row>
+
     <!-- Product Cards -->
     <v-row>
       <v-col
@@ -171,6 +184,14 @@ const confirmAddToCart = async () => {
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- Pagination -->
+    <v-pagination
+      v-model="page"
+      :length="totalPages"
+      :total-visible="5"
+      @input="onPageChange"
+    ></v-pagination>
   </v-container>
 
   <!-- Add to Cart Modal -->
@@ -181,7 +202,8 @@ const confirmAddToCart = async () => {
       </v-alert>
       <v-card-title>Add to Cart</v-card-title>
       <v-card-subtitle>
-        Add quantity for <strong>{{ selectedProduct?.name }}</strong>.
+        Add quantity for <strong>{{ selectedProduct?.name }}</strong
+        >.
       </v-card-subtitle>
       <v-card-text>
         <p><strong>Description:</strong> {{ selectedProduct?.description }}</p>
@@ -198,7 +220,9 @@ const confirmAddToCart = async () => {
       </v-card-text>
       <v-card-actions>
         <v-btn color="primary" @click="confirmAddToCart">Confirm</v-btn>
-        <v-btn color="secondary" @click="showAddToCartModal = false">Cancel</v-btn>
+        <v-btn color="secondary" @click="showAddToCartModal = false"
+          >Cancel</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>

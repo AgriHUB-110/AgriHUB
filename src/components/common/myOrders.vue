@@ -1,11 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { supabase } from '@/utils/supabase.js'
-import {
-  getCurrentUserId,
-  userType,
-  checkUserType,
-} from '@/utils/common_functions'
+import { getCurrentUserId, userType } from '@/utils/common_functions'
 
 const orders = ref([])
 const selectedOrder = ref(null) // Store selected order for details modal
@@ -15,11 +11,10 @@ const fetchOrders = async () => {
   try {
     const userId = await getCurrentUserId()
 
-    // Fetch orders where user_id matches the current user
     const { data, error } = await supabase
       .from('orders')
       .select('*')
-      .eq('user_id', userId) // Fetch orders for the logged-in user
+      .eq('user_id', userId)
 
     if (error) {
       console.error('Error fetching orders:', error.message)
@@ -32,8 +27,8 @@ const fetchOrders = async () => {
   }
 }
 
-// Update product table when shipped
-const updateProductTable = async orderId => {
+// Update product stock when the order is shipped
+const updateProductTable = async (orderId) => {
   try {
     const { data: orderItems, error } = await supabase
       .from('order_items')
@@ -45,14 +40,11 @@ const updateProductTable = async orderId => {
       return
     }
 
-    // Update product table with new stock
-
-    // Update product stock
     for (const item of orderItems) {
       const { data: product, error: productError } = await supabase
-        .from('products')
+        .from('Product')
         .select('stock')
-        .eq('id', item.product_id)
+        .eq('product_id', item.product_id)
         .single()
 
       if (productError) {
@@ -62,10 +54,15 @@ const updateProductTable = async orderId => {
 
       const newStock = product.stock - item.quantity
 
+      if (newStock < 0) {
+        console.warn(`Stock for product ID ${item.product_id} is insufficient.`)
+        continue
+      }
+
       const { error: updateError } = await supabase
-        .from('products')
+        .from('Product')
         .update({ stock: newStock })
-        .eq('id', item.product_id)
+        .eq('product_id', item.product_id)
 
       if (updateError) {
         console.error('Error updating product stock:', updateError.message)
@@ -82,7 +79,7 @@ onMounted(() => {
   fetchOrders()
 })
 
-// Function to update order status (for seller)
+// Function to update order status
 const updateOrderStatus = async (orderId, status) => {
   try {
     const { error } = await supabase
@@ -95,6 +92,11 @@ const updateOrderStatus = async (orderId, status) => {
       return
     }
 
+    // If status is "Shipped," update the product stock
+    if (status === 'Shipped') {
+      await updateProductTable(orderId)
+    }
+
     // Refresh orders after status update
     fetchOrders()
   } catch (err) {
@@ -103,7 +105,7 @@ const updateOrderStatus = async (orderId, status) => {
 }
 
 // Function to toggle the selected order for details
-const showOrderDetails = order => {
+const showOrderDetails = (order) => {
   selectedOrder.value = selectedOrder.value === order ? null : order
 }
 </script>
@@ -131,9 +133,9 @@ const showOrderDetails = order => {
               <v-list-item v-for="item in order.items" :key="item.product_id">
                 <v-list-item-content>
                   <v-list-item-title>{{ item.product_name }}</v-list-item-title>
-                  <v-list-item-subtitle
-                    >Quantity: {{ item.quantity }}</v-list-item-subtitle
-                  >
+                  <v-list-item-subtitle>
+                    Quantity: {{ item.quantity }}
+                  </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -141,9 +143,7 @@ const showOrderDetails = order => {
 
           <!-- Details Button -->
           <v-card-actions>
-            <v-btn @click="showOrderDetails(order)" color="primary"
-              >Details</v-btn
-            >
+            <v-btn @click="showOrderDetails(order)" color="primary">Details</v-btn>
           </v-card-actions>
 
           <!-- Show Details for Selected Order -->
@@ -152,34 +152,42 @@ const showOrderDetails = order => {
               <v-list-item v-for="item in order.items" :key="item.product_id">
                 <v-list-item-content>
                   <v-list-item-title>{{ item.product_name }}</v-list-item-title>
-                  <v-list-item-subtitle
-                    >Quantity: {{ item.quantity }}</v-list-item-subtitle
-                  >
-                  <v-list-item-subtitle
-                    >Price: ${{ item.price }}</v-list-item-subtitle
-                  >
+                  <v-list-item-subtitle>
+                    Quantity: {{ item.quantity }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    Price: ${{ item.price }}
+                  </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-card-text>
 
-          <v-card-actions v-if="userType === 'Seller'">
-            <!-- Seller can update order status -->
+          <!-- Actions for Buyer and Seller -->
+          <v-card-actions>
+            <!-- Seller Actions -->
             <v-btn
-              v-if="order.status === 'Pending'"
+              v-if="userType === 'Seller' && order.status === 'Pending'"
               @click="updateOrderStatus(order.id, 'Shipped')"
-              and
-              updateProductTable
               color="primary"
             >
               Mark as Shipped
             </v-btn>
             <v-btn
-              v-if="order.status === 'Shipped'"
+              v-if="userType === 'Seller' && order.status === 'Shipped'"
               @click="updateOrderStatus(order.id, 'Delivered')"
               color="success"
             >
               Mark as Delivered
+            </v-btn>
+
+            <!-- Buyer Action -->
+            <v-btn
+              v-if="userType === 'Buyer' && order.status === 'Shipped'"
+              @click="updateOrderStatus(order.id, 'Delivered')"
+              color="success"
+            >
+              Mark as Received
             </v-btn>
           </v-card-actions>
         </v-card>
