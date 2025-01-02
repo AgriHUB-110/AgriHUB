@@ -33,7 +33,6 @@ onMounted(async () => {
 </script>
 <style>
 .profile-card {
-  background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
