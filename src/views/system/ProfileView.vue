@@ -16,16 +16,14 @@ import headerAH from '@/components/common/headerAH.vue'
 import UserProfile from '@/components/common/userProfile.vue'
 import { requiredValidator, integerValidator } from '@/utils/validator.js'
 import notif from '@/components/common/notif.vue'
-import { onLogout as handleLogout } from '@/utils/common_functions.js'
-
+import {
+  onLogout as handleLogout,
+  userType,
+  checkUserType,
+} from '@/utils/common_functions.js'
+import myOrders from '@/components/common/myOrders.vue'
 // Logout function
 const router = useRouter()
-const userType = ref('')
-
-const checkUserType = () => {
-  const storedUserType = localStorage.getItem('user_type')
-  userType.value = storedUserType || '' // Set the user type from localStorage
-}
 
 // Load seller products when component is mounted
 onMounted(async () => {
@@ -102,12 +100,12 @@ onMounted(async () => {
                     </v-list-item>
 
                     <!-- Payment Method -->
-                    <v-list-item @click="showModal('paymentMethod')">
+                    <!-- <v-list-item @click="showModal('paymentMethod')">
                       <v-list-item-icon>
                         <v-icon>mdi-credit-card</v-icon>
                       </v-list-item-icon>
                       <v-list-item-title>Payment Method</v-list-item-title>
-                    </v-list-item>
+                    </v-list-item> -->
                     <!-- Oder tracking -->
                     <v-list-item @click="showModal('orderTracking')">
                       <v-list-item-icon>
@@ -162,7 +160,7 @@ onMounted(async () => {
                     <v-icon>mdi-close</v-icon>
                   </v-btn>
                 </v-toolbar>
-                <v-card-text> My Orders content goes here. </v-card-text>
+                <myOrders></myOrders>
               </v-card>
             </v-dialog>
 
