@@ -147,22 +147,18 @@ const handleCheckout = async () => {
       return
     }
 
-    // 4. Update the stock for each product (optional)
-    for (const item of selectedItems.value) {
-      const { error: stockError } = await supabase
-        .from('Product')
-        .update({ stock: item.stock - item.quantity })
-        .eq('product_id', item.product_id)
+    // 4. Remove the selected items from the cart in the database
+    const productIdsToRemove = selectedItems.value.map(item => item.product_id)
+    await supabase
+      .from('cart')
+      .delete()
+      .eq('user_id', userId)
+      .in('product_id', productIdsToRemove)
 
-      if (stockError) {
-        console.error('Error updating stock:', stockError.message)
-        errorMessage.value = 'Failed to update stock. Please try again.'
-        return
-      }
-    }
-
-    // 5. Clear cart and reset selections after order creation
+    // 5. Remove the selected items locally from the cart state
     cart.value = cart.value.filter(item => !selectedItems.value.includes(item))
+
+    // Clear selectedItems and selectAll
     selectedItems.value = []
     selectAll.value = false
     checkoutDialog.value = false
@@ -174,6 +170,8 @@ const handleCheckout = async () => {
     console.error('Unexpected error during checkout:', error)
   }
 }
+
+
 
 
 onMounted(fetchCartProducts)
