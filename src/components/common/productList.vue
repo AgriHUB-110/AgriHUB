@@ -174,7 +174,6 @@ const confirmAddToCart = async () => {
           <v-card-text>
             <p><strong>Price:</strong> ${{ product.price }}</p>
             <p><strong>Stock:</strong> {{ product.stock }}</p>
-            <p><strong>Rating:</strong> {{ product.rating }}</p>
           </v-card-text>
           <v-card-actions>
             <v-btn color="success" @click="prepareAddToCart(product)">
