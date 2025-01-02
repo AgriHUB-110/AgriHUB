@@ -12,6 +12,8 @@ const selectedProduct = ref(null)
 const showAddToCartModal = ref(false)
 const addQuantity = ref(1) // Quantity to add
 const errorMessage = ref('')
+const successMessage = ref('') // For success notification
+const snackbarVisible = ref(false) // To control snackbar visibility
 
 // Computed properties for pagination
 const totalPages = computed(() => Math.ceil(total.value / perPage.value))
@@ -127,7 +129,8 @@ const confirmAddToCart = async () => {
         return
       }
     }
-
+    successMessage.value = `${selectedProduct.value.name} has been added to your cart!`
+    snackbarVisible.value = true // Show snackbar
     console.log(
       'Product added to cart:',
       selectedProduct.value.name,
@@ -161,9 +164,9 @@ const confirmAddToCart = async () => {
             <p><strong>Rating:</strong> {{ product.rating }}</p>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="success" @click="prepareAddToCart(product)"
-              >Add to Cart</v-btn
-            >
+            <v-btn color="success" @click="prepareAddToCart(product)">
+              Add to Cart
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -178,8 +181,7 @@ const confirmAddToCart = async () => {
       </v-alert>
       <v-card-title>Add to Cart</v-card-title>
       <v-card-subtitle>
-        Add quantity for <strong>{{ selectedProduct?.name }}</strong
-        >.
+        Add quantity for <strong>{{ selectedProduct?.name }}</strong>.
       </v-card-subtitle>
       <v-card-text>
         <p><strong>Description:</strong> {{ selectedProduct?.description }}</p>
@@ -196,10 +198,13 @@ const confirmAddToCart = async () => {
       </v-card-text>
       <v-card-actions>
         <v-btn color="primary" @click="confirmAddToCart">Confirm</v-btn>
-        <v-btn color="secondary" @click="showAddToCartModal = false"
-          >Cancel</v-btn
-        >
+        <v-btn color="secondary" @click="showAddToCartModal = false">Cancel</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- Success Snackbar -->
+  <v-snackbar v-model="snackbarVisible" timeout="3000" top>
+    {{ successMessage }}
+  </v-snackbar>
 </template>

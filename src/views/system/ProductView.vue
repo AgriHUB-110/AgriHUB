@@ -4,6 +4,8 @@ import headerAH from '@/components/common/headerAH.vue'
 import { supabase } from '@/utils/supabase.js'
 import { getCurrentUserId } from '@/utils/common_functions.js'
 
+// Computed property to check if the cart is empty
+const isCartEmpty = computed(() => cart.value.length === 0)
 const cart = ref([])
 const checkoutDialog = ref(false)
 const removedialog = ref(false)
@@ -14,7 +16,7 @@ const selectAll = ref(false)
 const checkoutConfirmationDialog = ref(false)
 const successMessage = ref('') // For success notification
 const errorMessage = ref('') // For error notification
-
+const snackbarVisible = ref(false) // To control snackbar visibility
 // Computed property for total amount
 const totalAmount = computed(() =>
   selectedItems.value.reduce(
@@ -53,37 +55,48 @@ const openRemoveDialog = item => {
 }
 
 // Confirm Removal
+// Function to confirm remove action
 const confirmRemove = async () => {
-  if (removeQuantity.value > selectedItem.value.quantity) {
-    console.warn('Quantity to remove exceeds available quantity.')
-    return
+  try {
+    if (removeQuantity.value > selectedItem.value.quantity) {
+      errorMessage.value = 'Quantity to remove exceeds available quantity.'
+      snackbarVisible.value = true
+      return
+    }
+
+    // Update the quantity locally
+    selectedItem.value.quantity -= removeQuantity.value
+
+    // If the quantity reaches 0, remove the item from the cart
+    if (selectedItem.value.quantity === 0) {
+      cart.value = cart.value.filter(
+        item => item.product_id !== selectedItem.value.product_id,
+      )
+      // Remove the item from the database
+      await supabase
+        .from('cart')
+        .delete()
+        .eq('user_id', await getCurrentUserId())
+        .eq('product_id', selectedItem.value.product_id)
+    } else {
+      // Otherwise, update the quantity in the database
+      await supabase
+        .from('cart')
+        .update({ quantity: selectedItem.value.quantity })
+        .eq('user_id', await getCurrentUserId())
+        .eq('product_id', selectedItem.value.product_id)
+    }
+
+    successMessage.value = `Removed ${removeQuantity.value} items from the cart.`
+    snackbarVisible.value = true // Show success snackbar
+  } catch (err) {
+    console.error('Unexpected error:', err)
+    errorMessage.value = 'Failed to remove items. Please try again.'
+    snackbarVisible.value = true // Show error snackbar
+  } finally {
+    // Close the dialog after update
+    removedialog.value = false
   }
-
-  // Update the quantity locally
-  selectedItem.value.quantity -= removeQuantity.value
-
-  // If the quantity reaches 0, remove the item from the cart
-  if (selectedItem.value.quantity === 0) {
-    cart.value = cart.value.filter(
-      item => item.product_id !== selectedItem.value.product_id,
-    )
-    // Remove the item from the database
-    await supabase
-      .from('cart')
-      .delete()
-      .eq('user_id', await getCurrentUserId())
-      .eq('product_id', selectedItem.value.product_id)
-  } else {
-    // Otherwise, update the quantity in the database
-    await supabase
-      .from('cart')
-      .update({ quantity: selectedItem.value.quantity })
-      .eq('user_id', await getCurrentUserId())
-      .eq('product_id', selectedItem.value.product_id)
-  }
-
-  // Close the dialog after update
-  removedialog.value = false
 }
 
 // Handle Checkbox Selection
@@ -97,15 +110,15 @@ const toggleSelection = item => {
   }
 }
 
-const toggleSelectAll = () => {
-  if (selectAll.value) {
-    selectedItems.value = [...cart.value]
-    cart.value.forEach(item => (item.selected = true))
-  } else {
-    selectedItems.value = []
-    cart.value.forEach(item => (item.selected = false))
-  }
-}
+// const toggleSelectAll = () => {
+//   if (selectAll.value) {
+//     selectedItems.value = [...cart.value]
+//     cart.value.forEach(item => (item.selected = true))
+//   } else {
+//     selectedItems.value = []
+//     cart.value.forEach(item => (item.selected = false))
+//   }
+// }
 
 // Handle Checkout
 const handleCheckout = async () => {
@@ -131,7 +144,7 @@ const handleCheckout = async () => {
 
     // 2. Prepare the order items for insertion
     const orderItems = selectedItems.value.map(item => ({
-      id: newOrder.id,   // Link each item to the created order
+      id: newOrder.id, // Link each item to the created order
       product_id: item.product_id,
       quantity: item.quantity,
       price: item.price,
@@ -140,10 +153,11 @@ const handleCheckout = async () => {
     // 3. Insert all order items into the database at once
     const { error: itemsError } = await supabase
       .from('order_items')
-      .upsert(orderItems, { onConflict: ['id', 'product_id'] })  // Prevent duplicates
+      .upsert(orderItems, { onConflict: ['id', 'product_id'] }) // Prevent duplicates
     if (itemsError) {
       console.error('Error inserting order items:', itemsError.message)
-      errorMessage.value = 'Failed to add order items. Please try again.'
+      errorMessage.value = 'Failed to add items to the order. Please try ordering one at a time.'
+      snackbarVisible.value = true
       return
     }
 
@@ -165,14 +179,14 @@ const handleCheckout = async () => {
     checkoutConfirmationDialog.value = false
 
     successMessage.value = 'Order and items successfully added!'
+    snackbarVisible.value = true
     console.log('Order and items successfully added.')
   } catch (error) {
     console.error('Unexpected error during checkout:', error)
+    errorMessage.value = 'Failed to checkout. Please try again.'
+    snackbarVisible.value = true
   }
 }
-
-
-
 
 onMounted(fetchCartProducts)
 </script>
@@ -190,25 +204,6 @@ onMounted(fetchCartProducts)
   <headerAH>
     <template #responsive_nav>
       <v-container>
-        <!-- Success Notification -->
-        <v-alert
-          v-if="successMessage"
-          type="success"
-          dismissible
-          @click:close="successMessage = ''"
-        >
-          {{ successMessage }}
-        </v-alert>
-
-        <!-- Error Notification -->
-        <v-alert
-          v-if="errorMessage"
-          type="error"
-          dismissible
-          @click:close="errorMessage = ''"
-        >
-          {{ errorMessage }}
-        </v-alert>
         <h1 class="text-center mb-5">Your Cart</h1>
 
         <v-row>
@@ -245,13 +240,17 @@ onMounted(fetchCartProducts)
 
         <v-row>
           <v-col cols="12">
-            <v-checkbox
+            <!-- <v-checkbox
               v-model="selectAll"
               label="Select All"
               @change="toggleSelectAll"
-            />
+            /> -->
             <h3>Total: ${{ totalAmount }}</h3>
-            <v-btn color="success" @click="checkoutDialog = true">
+            <v-btn
+              color="success"
+              @click="checkoutDialog = true"
+              :disabled="isCartEmpty"
+            >
               Checkout
             </v-btn>
           </v-col>
@@ -315,4 +314,8 @@ onMounted(fetchCartProducts)
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <!-- Success/Error Snackbar inside the Card -->
+  <v-snackbar v-model="snackbarVisible" timeout="3000" top>
+    {{ successMessage || errorMessage }}
+  </v-snackbar>
 </template>
