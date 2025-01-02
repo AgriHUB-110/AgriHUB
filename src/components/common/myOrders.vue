@@ -1,10 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/utils/supabase.js'
-import { getCurrentUserId } from '@/utils/common_functions'
+import {
+  getCurrentUserId,
+  userType,
+  checkUserType,
+} from '@/utils/common_functions'
 
 const orders = ref([])
-const userRole = ref('buyer') // Assuming you have a way to determine the role (buyer or seller)
 const selectedOrder = ref(null) // Store selected order for details modal
 
 // Function to fetch orders
@@ -24,6 +27,51 @@ const fetchOrders = async () => {
     }
 
     orders.value = data || []
+  } catch (err) {
+    console.error('Unexpected error:', err)
+  }
+}
+
+// Update product table when shipped
+const updateProductTable = async orderId => {
+  try {
+    const { data: orderItems, error } = await supabase
+      .from('order_items')
+      .select('product_id, quantity')
+      .eq('order_id', orderId)
+
+    if (error) {
+      console.error('Error fetching order items:', error.message)
+      return
+    }
+
+    // Update product table with new stock
+
+    // Update product stock
+    for (const item of orderItems) {
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .select('stock')
+        .eq('id', item.product_id)
+        .single()
+
+      if (productError) {
+        console.error('Error fetching product:', productError.message)
+        continue
+      }
+
+      const newStock = product.stock - item.quantity
+
+      const { error: updateError } = await supabase
+        .from('products')
+        .update({ stock: newStock })
+        .eq('id', item.product_id)
+
+      if (updateError) {
+        console.error('Error updating product stock:', updateError.message)
+        continue
+      }
+    }
   } catch (err) {
     console.error('Unexpected error:', err)
   }
@@ -55,7 +103,7 @@ const updateOrderStatus = async (orderId, status) => {
 }
 
 // Function to toggle the selected order for details
-const showOrderDetails = (order) => {
+const showOrderDetails = order => {
   selectedOrder.value = selectedOrder.value === order ? null : order
 }
 </script>
@@ -67,8 +115,8 @@ const showOrderDetails = (order) => {
       <v-col v-for="order in orders" :key="order.id" cols="12" md="6">
         <v-card>
           <v-card-title>
-            <span v-if="userRole === 'buyer'">Order #{{ order.id }}</span>
-            <span v-if="userRole === 'seller'">Sale #{{ order.id }}</span>
+            <span v-if="userType === 'Buyer'">Order #{{ order.id }}</span>
+            <span v-if="userType === 'Seller'">Sale #{{ order.id }}</span>
           </v-card-title>
           <v-card-subtitle>
             <p><strong>Status:</strong> {{ order.status }}</p>
@@ -93,7 +141,9 @@ const showOrderDetails = (order) => {
 
           <!-- Details Button -->
           <v-card-actions>
-            <v-btn @click="showOrderDetails(order)" color="primary">Details</v-btn>
+            <v-btn @click="showOrderDetails(order)" color="primary"
+              >Details</v-btn
+            >
           </v-card-actions>
 
           <!-- Show Details for Selected Order -->
@@ -102,18 +152,24 @@ const showOrderDetails = (order) => {
               <v-list-item v-for="item in order.items" :key="item.product_id">
                 <v-list-item-content>
                   <v-list-item-title>{{ item.product_name }}</v-list-item-title>
-                  <v-list-item-subtitle>Quantity: {{ item.quantity }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>Price: ${{ item.price }}</v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    >Quantity: {{ item.quantity }}</v-list-item-subtitle
+                  >
+                  <v-list-item-subtitle
+                    >Price: ${{ item.price }}</v-list-item-subtitle
+                  >
                 </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-card-text>
 
-          <v-card-actions v-if="userRole === 'seller'">
+          <v-card-actions v-if="userType === 'Seller'">
             <!-- Seller can update order status -->
             <v-btn
               v-if="order.status === 'Pending'"
               @click="updateOrderStatus(order.id, 'Shipped')"
+              and
+              updateProductTable
               color="primary"
             >
               Mark as Shipped

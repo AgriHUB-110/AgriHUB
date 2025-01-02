@@ -1,8 +1,6 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '@/utils/supabase.js'
 
-
-
 // Retrieve user table ID
 
 export const getCurrentUserId = async () => {
@@ -31,10 +29,10 @@ export const getCurrentUserId = async () => {
       return null
     }
     console.log('User Table ID:', userData.id)
-    console.log('User Type:', userData.user_type) 
+    console.log('User Type:', userData.user_type)
 
-     // Store user type in localStorage
-     localStorage.setItem('user_type', userData.user_type)
+    // Store user type in localStorage
+    localStorage.setItem('user_type', userData.user_type)
 
     return userData.id
   } catch (err) {
@@ -42,7 +40,6 @@ export const getCurrentUserId = async () => {
     return null
   }
 }
-
 
 export const isLoggedIn = ref(false)
 
@@ -56,4 +53,11 @@ export const onLogout = async () => {
   } catch (error) {
     console.error('Error logging out:', error)
   }
+}
+
+export const userType = ref('')
+
+export const checkUserType = () => {
+  const storedUserType = localStorage.getItem('user_type')
+  userType.value = storedUserType || '' // Set the user type from localStorage
 }
