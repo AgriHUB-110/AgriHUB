@@ -33,7 +33,7 @@ const updateProductTable = async (orderId) => {
     const { data: orderItems, error } = await supabase
       .from('order_items')
       .select('product_id, quantity')
-      .eq('order_id', orderId)
+      .eq('id', orderId)
 
     if (error) {
       console.error('Error fetching order items:', error.message)

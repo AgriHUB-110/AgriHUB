@@ -118,6 +118,6 @@ export const resetForm = () => {
     price: '',
     category: '',
     stock: '',
-    image_path: null,
+    // image_path: null,
   }
 }

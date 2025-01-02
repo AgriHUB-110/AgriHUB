@@ -25,7 +25,7 @@ const fetchProducts = async () => {
   try {
     let query = supabase
       .from('Product')
-      .select('product_id, name, description, price, stock, rating', {
+      .select('product_id, name, description, price, stock', {
         count: 'exact',
       })
       .range((page.value - 1) * perPage.value, page.value * perPage.value - 1)
@@ -209,7 +209,6 @@ const confirmAddToCart = async () => {
         <p><strong>Description:</strong> {{ selectedProduct?.description }}</p>
         <p><strong>Price:</strong> ${{ selectedProduct?.price }}</p>
         <p><strong>Available Stock:</strong> {{ selectedProduct?.stock }}</p>
-        <p><strong>Rating:</strong> {{ selectedProduct?.rating }}</p>
         <v-text-field
           v-model="addQuantity"
           type="number"
