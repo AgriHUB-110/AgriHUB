@@ -1,166 +1,226 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { supabase } from '@/utils/supabase.js';
-import headerAH from '@/components/common/headerAH.vue';
-import { getCurrentUserId } from '@/utils/common_functions.js';
+import { ref, computed, onMounted } from 'vue'
+import headerAH from '@/components/common/headerAH.vue'
+import { supabase } from '@/utils/supabase.js'
+import { getCurrentUserId } from '@/utils/common_functions.js'
 
-// Cart stores the products and quantities (2D array)
-const cart = ref([]);
+const cart = ref([])
+const checkoutDialog = ref(false)
+const removedialog = ref(false)
+const removeQuantity = ref(1)
+const selectedItem = ref(null)
+const selectedItems = ref([])
+const selectAll = ref(false)
+const checkoutConfirmationDialog = ref(false)
+const successMessage = ref('') // For success notification
+const errorMessage = ref('') // For error notification
 
-// Variable to store the quantity to remove when prompted
-const removeQuantity = ref(1);
-const removeDialog = ref(false);
-const selectedProduct = ref(null); // Selected product for removal
+// Computed property for total amount
+const totalAmount = computed(() =>
+  selectedItems.value.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  ),
+)
 
-// Fetch products in the cart based on cart_id array
+// Fetch cart products
 const fetchCartProducts = async () => {
-  try {
-    const userId = await getCurrentUserId();
-    if (!userId) {
-      console.warn('No user ID found.');
-      return;
-    }
+  const userId = await getCurrentUserId()
+  const { data: cartItems } = await supabase
+    .from('cart')
+    .select('*')
+    .eq('user_id', userId)
 
-    // Fetch the cart_id (as an array) from the User table
-    const { data: userData, error: userError } = await supabase
-      .from('User')
-      .select('cart_id') // cart_id should be an array column
-      .eq('id', userId)
-      .single();
+  const productIds = cartItems.map(item => item.product_id)
+  const { data: products } = await supabase
+    .from('Product')
+    .select('*')
+    .in('product_id', productIds)
 
-    if (userError) {
-      console.error('Error fetching cart_id:', userError.message);
-      return;
-    }
+  cart.value = products.map(product => ({
+    ...product,
+    quantity:
+      cartItems.find(cartItem => cartItem.product_id === product.product_id)
+        ?.quantity || 1,
+  }))
+}
 
-    const cartIds = userData?.cart_id || [];
-    if (cartIds.length === 0) {
-      console.warn('No products in the cart.');
-      return;
-    }
+// Open Remove Dialog
+const openRemoveDialog = item => {
+  selectedItem.value = item
+  removeQuantity.value = 1
+  removedialog.value = true
+}
 
-    // Fetch products in the cart using the cart_ids
-    const { data: cartData, error: cartError } = await supabase
-      .from('Product')
-      .select('product_id, name, description, price, stock')
-      .in('product_id', cartIds); // Fetch products whose IDs are in cartIds array
-
-    if (cartError) {
-      console.error('Error fetching cart products:', cartError.message);
-      return;
-    }
-
-    // Map cart data with quantities stored in cart_ids (2D array structure)
-    cart.value = cartData.map(product => {
-      const quantity = cartIds.find(item => item[0] === product.product_id)?.[1] || 1;
-      return { ...product, quantity };
-    }).filter(item => item.quantity > 0); // Filter out items with 0 quantity
-
-  } catch (err) {
-    console.error('Unexpected error:', err);
+// Confirm Removal
+const confirmRemove = async () => {
+  if (removeQuantity.value > selectedItem.value.quantity) {
+    console.warn('Quantity to remove exceeds available quantity.')
+    return
   }
-};
 
+  // Update the quantity locally
+  selectedItem.value.quantity -= removeQuantity.value
 
-// Remove a product from the cart (decrease quantity or remove entirely)
-const removeFromCart = async (product, quantity) => {
-  try {
-    // If quantity is more than 1, ask for confirmation
-    if (quantity > 1) {
-      selectedProduct.value = product;
-      removeDialog.value = true;
-    } else {
-      await updateCart(product.product_id, 1); // Directly remove if quantity is 1
-      removeDialog.value = false; // Close dialog after removing product
-    }
-  } catch (err) {
-    console.error('Unexpected error:', err);
+  // If the quantity reaches 0, remove the item from the cart
+  if (selectedItem.value.quantity === 0) {
+    cart.value = cart.value.filter(
+      item => item.product_id !== selectedItem.value.product_id,
+    )
+    // Remove the item from the database
+    await supabase
+      .from('cart')
+      .delete()
+      .eq('user_id', await getCurrentUserId())
+      .eq('product_id', selectedItem.value.product_id)
+  } else {
+    // Otherwise, update the quantity in the database
+    await supabase
+      .from('cart')
+      .update({ quantity: selectedItem.value.quantity })
+      .eq('user_id', await getCurrentUserId())
+      .eq('product_id', selectedItem.value.product_id)
   }
-};
 
-// Update the cart: subtract quantity or remove product entirely
-const updateCart = async (productId, quantityToRemove) => {
+  // Close the dialog after update
+  removedialog.value = false
+}
+
+// Handle Checkbox Selection
+const toggleSelection = item => {
+  if (item.selected) {
+    selectedItems.value.push(item)
+  } else {
+    selectedItems.value = selectedItems.value.filter(
+      selected => selected.product_id !== item.product_id,
+    )
+  }
+}
+
+const toggleSelectAll = () => {
+  if (selectAll.value) {
+    selectedItems.value = [...cart.value]
+    cart.value.forEach(item => (item.selected = true))
+  } else {
+    selectedItems.value = []
+    cart.value.forEach(item => (item.selected = false))
+  }
+}
+
+// Handle Checkout
+const handleCheckout = async () => {
+  const userId = await getCurrentUserId()
+  if (!userId) return
+
   try {
-    const userId = await getCurrentUserId();
-    if (!userId) {
-      console.warn('No user ID found.');
-      return;
+    // 1. Insert into orders table (create a new order)
+    const { data: newOrder, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: userId,
+        total_price: totalAmount.value,
+        status: 'Pending', // Assuming "pending" is the status
+      })
+      .select('id')
+      .single()
+
+    if (orderError) {
+      console.error('Error creating order:', orderError.message)
+      return
     }
 
-    // Fetch current cart_id from the User table
-    const { data: userData, error: userError } = await supabase
-      .from('User')
-      .select('cart_id')
-      .eq('id', userId)
-      .single();
+    // 2. Prepare the order items for insertion
+    const orderItems = selectedItems.value.map(item => ({
+      id: newOrder.id,   // Link each item to the created order
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price: item.price,
+    }))
 
-    if (userError) {
-      console.error('Error fetching cart_id:', userError.message);
-      return;
+    // 3. Insert all order items into the database at once
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .upsert(orderItems, { onConflict: ['id', 'product_id'] })  // Prevent duplicates
+    if (itemsError) {
+      console.error('Error inserting order items:', itemsError.message)
+      errorMessage.value = 'Failed to add order items. Please try again.'
+      return
     }
 
-    let cartIds = userData?.cart_id || [];
+    // 4. Update the stock for each product (optional)
+    for (const item of selectedItems.value) {
+      const { error: stockError } = await supabase
+        .from('Product')
+        .update({ stock: item.stock - item.quantity })
+        .eq('product_id', item.product_id)
 
-    // Find the product in the cart and update the quantity or remove it entirely
-    const productIndex = cartIds.findIndex(item => item[0] === productId);
-    if (productIndex !== -1) {
-      const currentQuantity = cartIds[productIndex][1];
-      const newQuantity = currentQuantity - quantityToRemove;
-
-      if (newQuantity > 0) {
-        // Update quantity if it's more than 0
-        cartIds[productIndex][1] = newQuantity;
-      } else {
-        // Remove product if quantity is 0 or less
-        cartIds.splice(productIndex, 1);
+      if (stockError) {
+        console.error('Error updating stock:', stockError.message)
+        errorMessage.value = 'Failed to update stock. Please try again.'
+        return
       }
     }
 
-    // Update the User table with the updated cart_id array
-    const { error: updateError } = await supabase
-      .from('User')
-      .update({ cart_id: cartIds })
-      .eq('id', userId);
+    // 5. Clear cart and reset selections after order creation
+    cart.value = cart.value.filter(item => !selectedItems.value.includes(item))
+    selectedItems.value = []
+    selectAll.value = false
+    checkoutDialog.value = false
+    checkoutConfirmationDialog.value = false
 
-    if (updateError) {
-      console.error('Error updating cart:', updateError.message);
-      return;
-    }
-
-    // Update the cart array locally by modifying the quantity or removing the product
-    if (quantityToRemove === selectedProduct.value.quantity) {
-      cart.value = cart.value.filter(item => item.product_id !== productId); // Remove product entirely
-    } else {
-      const product = cart.value.find(item => item.product_id === productId);
-      if (product) {
-        product.quantity -= quantityToRemove;
-      }
-    }
-
-    // Filter out items with quantity 0
-    cart.value = cart.value.filter(item => item.quantity > 0);
-
-    console.log('Product quantity updated in cart:', productId);
-    removeDialog.value = false; // Close dialog after successful update
-  } catch (err) {
-    console.error('Unexpected error:', err);
+    successMessage.value = 'Order and items successfully added!'
+    console.log('Order and items successfully added.')
+  } catch (error) {
+    console.error('Unexpected error during checkout:', error)
   }
-};
+}
 
 
-// Fetch cart products when the component is mounted
-onMounted(() => {
-  fetchCartProducts();
-});
+onMounted(fetchCartProducts)
 </script>
+
+<style scoped>
+.text-center {
+  text-align: center;
+}
+.mb-5 {
+  margin-bottom: 20px;
+}
+</style>
 
 <template>
   <headerAH>
     <template #responsive_nav>
       <v-container>
+        <!-- Success Notification -->
+        <v-alert
+          v-if="successMessage"
+          type="success"
+          dismissible
+          @click:close="successMessage = ''"
+        >
+          {{ successMessage }}
+        </v-alert>
+
+        <!-- Error Notification -->
+        <v-alert
+          v-if="errorMessage"
+          type="error"
+          dismissible
+          @click:close="errorMessage = ''"
+        >
+          {{ errorMessage }}
+        </v-alert>
         <h1 class="text-center mb-5">Your Cart</h1>
+
         <v-row>
-          <v-col v-for="item in cart" :key="item.product_id" cols="12" sm="6" md="4">
+          <v-col
+            v-for="item in cart"
+            :key="item.product_id"
+            cols="12"
+            sm="6"
+            md="4"
+          >
             <v-card class="mx-auto" max-width="400">
               <v-card-title class="text-h6">{{ item.name }}</v-card-title>
               <v-card-subtitle class="text-body-2 text-muted">
@@ -170,43 +230,90 @@ onMounted(() => {
                 <p><strong>Price:</strong> ${{ item.price }}</p>
                 <p><strong>Stock:</strong> {{ item.stock }}</p>
                 <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                <v-checkbox
+                  v-model="item.selected"
+                  :label="'Select for checkout'"
+                  @change="toggleSelection(item)"
+                />
               </v-card-text>
               <v-card-actions>
-                <v-btn color="error" @click="removeFromCart(item, item.quantity)">
+                <v-btn color="error" @click="openRemoveDialog(item)">
                   Remove
-                </v-btn>
-                <v-btn color="success">
-                  Checkout
                 </v-btn>
               </v-card-actions>
             </v-card>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12">
+            <v-checkbox
+              v-model="selectAll"
+              label="Select All"
+              @change="toggleSelectAll"
+            />
+            <h3>Total: ${{ totalAmount }}</h3>
+            <v-btn color="success" @click="checkoutDialog = true">
+              Checkout
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
     </template>
   </headerAH>
 
-  <!-- Prompt dialog for quantity removal -->
-  <v-dialog v-model="removeDialog" max-width="400">
+  <!-- Checkout Confirmation Modal -->
+  <v-dialog v-model="checkoutDialog" max-width="500">
     <v-card>
-      <v-card-title class="text-h6">Remove Quantity</v-card-title>
+      <v-card-title class="text-h6">Confirm Checkout</v-card-title>
+      <v-card-text>
+        <p>
+          Your total amount is <strong>${{ totalAmount }}</strong
+          >.
+        </p>
+        <p>Are you sure you want to proceed with the purchase?</p>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn text @click="checkoutDialog = false">Cancel</v-btn>
+        <v-btn color="primary" @click="checkoutConfirmationDialog = true"
+          >Proceed</v-btn
+        >
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Checkout Final Confirmation Modal -->
+  <v-dialog v-model="checkoutConfirmationDialog" max-width="500">
+    <v-card>
+      <v-card-title class="text-h6">Final Confirmation</v-card-title>
+      <v-card-text>
+        <p>Your order will now be processed. Do you want to finalize it?</p>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn text @click="checkoutConfirmationDialog = false">Cancel</v-btn>
+        <v-btn color="primary" @click="handleCheckout">Confirm</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Remove Modal -->
+  <v-dialog v-model="removedialog" max-width="500">
+    <v-card>
+      <v-card-title class="text-h6">Enter quantity to remove:</v-card-title>
       <v-card-text>
         <v-text-field
           v-model="removeQuantity"
           type="number"
-          min="1"
-          :max="selectedProduct?.quantity"
-          label="Quantity to remove"
+          label="Quantity"
+          :min="1"
+          :max="selectedItem?.quantity || 0"
+          required
         ></v-text-field>
+        <p>Are you sure you want to remove this quantity?</p>
       </v-card-text>
       <v-card-actions>
-        <v-btn text @click="removeDialog = false">Cancel</v-btn>
-        <v-btn
-          color="primary"
-          @click="updateCart(selectedProduct.product_id, removeQuantity)"
-        >
-          Remove
-        </v-btn>
+        <v-btn text @click="removedialog = false">Cancel</v-btn>
+        <v-btn color="primary" @click="confirmRemove">Confirm</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

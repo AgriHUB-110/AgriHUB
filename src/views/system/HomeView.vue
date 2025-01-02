@@ -45,7 +45,6 @@ const router = useRouter()
               </v-btn>
             </v-card> -->
 
-            <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
           </v-col>
         </v-row>
       </v-container>
