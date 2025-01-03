@@ -26,6 +26,8 @@ const fetchOrders = async () => {
     console.error('Unexpected error:', err)
   }
 }
+// My orders for seller only..
+
 
 // Update product stock when the order is shipped
 const updateProductTable = async (orderId) => {
